@@ -24,14 +24,14 @@ complete_cols <- apply(apply(coffee, 2, complete.cases), 2, sum)
 #                  packs = as.factor(packs))
 
 # Step 2 - Simple summaries ----------------------------------------------------
-perWeek <- coffee %>% 
-                group_by(relweek) %>% 
-                summarise(total_packs = sum(packs),
-                          avg_packs = mean(packs),
-                          sd_packs = sd(packs),
-                          total_spend = sum(netspend),
-                          avg_spend = mean(netspend),
-                          sd_spend = sd(netspend))
+byWeek <- coffee %>% 
+            group_by(relweek) %>% 
+            summarise(total_packs = sum(packs),
+                      avg_packs = mean(packs),
+                      sd_packs = sd(packs),
+                      total_spend = sum(netspend),
+                      avg_spend = mean(netspend),
+                      sd_spend = sd(netspend))
 
 byDay <- coffee %>% 
           group_by(day) %>% 
@@ -50,6 +50,11 @@ byShop <- coffee %>%
                     total_spend = sum(netspend),
                     avg_spend = mean(netspend),
                     sd_spend = sd(netspend))
+
+byShopbyWeek <- coffee %>% 
+                group_by(shop_desc,
+                         relweek) %>% 
+                summarise(total_spend_shop = sum(netspend, na.rm = TRUE)) 
 
 bySubCat <- coffee %>% 
             group_by(sub_cat_name) %>% 
@@ -104,23 +109,25 @@ total_spend_by_shop <- coffee %>%
 ggsave("./jim/images/fieldRelationships/spendVsWeekByShop.svg", total_spend_by_shop,
        height = 10, width = 12)
 
-byWeek <- coffee %>% 
-          group_by(relweek) %>% 
-          summarise(total_spend = sum(netspend, na.rm = TRUE)) 
-byShop <- coffee %>% 
-          group_by(shop_desc,
-                    relweek) %>% 
-          summarise(total_spend_shop = sum(netspend, na.rm = TRUE)) 
 
-
-props <- left_join(byShop, byWeek) %>% 
-          mutate(prop = total_spend_shop / total_spend)
-
-mkt_prop <- props %>% 
+mkt_prop <- left_join(byShopbyWeek, byWeek) %>% 
+            mutate(prop = total_spend_shop / total_spend) %>% 
             ggplot(aes(x = relweek, y = prop, fill = shop_desc)) +
-            geom_area(aes(fill = shop_desc), colour = "ghostwhite") +
-            theme_minimal()
+              geom_area(aes(fill = shop_desc), colour = "ghostwhite") +
+              theme_minimal()
 ggsave("./jim/images/fieldRelationships/mktShare.svg", mkt_prop,
        height = 10, width = 12)
 
 
+## Develop function to create year plot by various fields
+sales_over_time_by <- function(data, field) {
+  data %>% 
+    group_by_(field, "relweek") %>% 
+    summarise(total_spend = sum(netspend)) %>% 
+    ggplot(aes_string(x = "relweek", y = "total_spend", colour = field)) +
+    geom_line(aes_string(colour = field), size = 0.75) +
+    theme_minimal()
+}
+
+fields <- c("shop_desc", "sub_cat_name", "day") 
+sales_over_time_by(coffee, "day")

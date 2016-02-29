@@ -20,49 +20,42 @@ complete_cols <- apply(apply(coffee, 2, complete.cases), 2, sum)
 # Convert certain fields to factor
 coffee <- coffee %>% 
           mutate(year = as.factor(year),
-                 day = as.factor(day))
+                 day = as.factor(day),
+                 house = as.character(house))
 
 # Step 2 - Simple summaries ----------------------------------------------------
-byWeek <- coffee %>% 
-            group_by(relweek) %>% 
-            summarise(total_packs = sum(packs),
-                      avg_packs = mean(packs),
-                      sd_packs = sd(packs),
-                      total_spend = sum(netspend),
-                      avg_spend = mean(netspend),
-                      sd_spend = sd(netspend))
+summarise_by_field <- function(data, field) {
+  data %>% 
+    group_by_(field) %>% 
+    summarise(records = n(),
+              total_packs = sum(packs),
+              avg_packs = mean(packs),
+              sd_packs = sd(packs),
+              total_spend = sum(netspend),
+              avg_spend = mean(netspend),
+              sd_spend = sd(netspend))
+}  
 
-byDay <- coffee %>% 
-          group_by(day) %>% 
-          summarise(total_packs = sum(packs),
-                    avg_packs = mean(packs),
-                    sd_packs = sd(packs),
-                    total_spend = sum(netspend),
-                    avg_spend = mean(netspend),
-                    sd_spend = sd(netspend))
+byWeek <- summarise_by_field(coffee, "relweek")
+byDay <- summarise_by_field(coffee, "day")
+byShop <- summarise_by_field(coffee, "shop_desc")
+bySubCat <- summarise_by_field(coffee, "sub_cat_name")
+byHouse <- summarise_by_field(coffee, "house")
 
-byShop <- coffee %>% 
-          group_by(shop_desc) %>% 
-          summarise(total_packs = sum(packs),
-                    avg_packs = mean(packs),
-                    sd_packs = sd(packs),
-                    total_spend = sum(netspend),
-                    avg_spend = mean(netspend),
-                    sd_spend = sd(netspend))
+summarise_by_fields <- function(data, field1, field2) {
+  data %>% 
+    group_by_(field1, field2) %>% 
+    summarise(records = n(),
+              total_packs = sum(packs),
+              avg_packs = mean(packs),
+              sd_packs = sd(packs),
+              total_spend = sum(netspend),
+              avg_spend = mean(netspend),
+              sd_spend = sd(netspend))
+} 
 
-byShopbyWeek <- coffee %>% 
-                group_by(shop_desc,
-                         relweek) %>% 
-                summarise(total_spend_shop = sum(netspend, na.rm = TRUE)) 
+byWeekbyHouse <- summarise_by_fields(coffee, "relweek", "house")
 
-bySubCat <- coffee %>% 
-            group_by(sub_cat_name) %>% 
-            summarise(total_packs = sum(packs),
-                      avg_packs = mean(packs),
-                      sd_packs = sd(packs),
-                      total_spend = sum(netspend),
-                      avg_spend = mean(netspend),
-                      sd_spend = sd(netspend))
 
 # Step 3 - Create some exploratory plots ---------------------------------------
 # Create function to draw histogram/count plots for all fields
@@ -132,5 +125,43 @@ lapply(fields, function(x) sales_over_time_by(coffee, x))
 lapply(fields, function(x) prop_sales_over_time_by(coffee, x))
 
 
+# Create histogram of packs and sales by house
+summarise_houses <- function(field) {
+  name <- paste0("./jim/images/byHouse/", field, "_hist.svg")
+  title <- paste0("Histogram of ", field, " for all houses")
+  plot <- byHouse %>% 
+          ggplot(aes_string(x = field)) +
+          geom_histogram(fill = "steelblue", colour = "white") +
+          theme_minimal() +
+          ggtitle(title)
+  ggsave(name, plot, height = 8, width = 8)
+}
+
+cols <- colnames(byHouse)[-1]
+lapply(cols, function(x) summarise_houses(x))
 
 
+# Summarise weekly level house data
+houseByWeek <- byWeekbyHouse %>% 
+                group_by(house) %>% 
+                summarise(avg_weekly_visits = mean(records),
+                          sd_weekly_visits = sd(records),
+                          avg_weekly_packs = mean(total_packs),
+                          sd_weekly_packs = sd(total_packs),
+                          avg_weekly_spend = mean(total_spend),
+                          sd_weekly_spend = sd(total_spend))
+
+summarise_weekly_houses <- function(field) {
+  name <- paste0("./jim/images/byHousebyWeek/", field, "_hist.svg")
+  title <- paste0("Histogram of ", field, " for all houses")
+  plot <- houseByWeek %>% 
+          ggplot(aes_string(x = field)) +
+          geom_histogram(fill = "steelblue", colour = "white") +
+          theme_minimal() +
+          ggtitle(title)
+  ggsave(name, plot, height = 8, width = 8)
+}
+
+cols <- c("avg_weekly_visits", "avg_weekly_packs", "avg_weekly_spend")
+lapply(cols, function(x) summarise_weekly_houses(x))
+    

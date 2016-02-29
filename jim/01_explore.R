@@ -18,10 +18,9 @@ cols <- ncol(coffee)
 complete_cols <- apply(apply(coffee, 2, complete.cases), 2, sum)
 
 # Convert certain fields to factor
-# coffee <- coffee %>% 
-#           mutate(year = as.factor(year),
-#                  day = as.factor(day),
-#                  packs = as.factor(packs))
+coffee <- coffee %>% 
+          mutate(year = as.factor(year),
+                 day = as.factor(day))
 
 # Step 2 - Simple summaries ----------------------------------------------------
 byWeek <- coffee %>% 
@@ -65,8 +64,8 @@ bySubCat <- coffee %>%
                       avg_spend = mean(netspend),
                       sd_spend = sd(netspend))
 
-# Step 3 - Create some exploratory plots ---------------------------------
-# Create function to draw histogram
+# Step 3 - Create some exploratory plots ---------------------------------------
+# Create function to draw histogram/count plots for all fields
 gg_hist <- function(data, field){
   is_num <- is.numeric(data[ , field])
   name <- paste0("./jim/images/fields/", field, ".svg")
@@ -88,6 +87,7 @@ gg_hist <- function(data, field){
 columns <- colnames(coffee)
 lapply(columns, function(x) gg_hist(coffee, x))
 
+
 # Examine total sales over time
 total_spend <- perWeek %>% 
                 ggplot(aes(x = relweek, y = total_spend)) +
@@ -97,37 +97,40 @@ ggsave("./jim/images/fieldRelationships/spendVsWeek.svg", total_spend,
        height = 8, width = 10)
 
 
-# Examine sales over time by shop
-total_spend_by_shop <- coffee %>% 
-                        group_by(shop_desc,
-                                 relweek) %>% 
-                        summarise(total_spend = sum(netspend, na.rm = TRUE)) %>%
-                        ggplot(aes(x = relweek, y = total_spend, colour = shop_desc)) +
-                        geom_line(aes(colour = shop_desc), # alpha = .75,
-                                  size = .75) +
-                        theme_minimal()
-ggsave("./jim/images/fieldRelationships/spendVsWeekByShop.svg", total_spend_by_shop,
-       height = 10, width = 12)
-
-
-mkt_prop <- left_join(byShopbyWeek, byWeek) %>% 
-            mutate(prop = total_spend_shop / total_spend) %>% 
-            ggplot(aes(x = relweek, y = prop, fill = shop_desc)) +
-              geom_area(aes(fill = shop_desc), colour = "ghostwhite") +
-              theme_minimal()
-ggsave("./jim/images/fieldRelationships/mktShare.svg", mkt_prop,
-       height = 10, width = 12)
-
-
-## Develop function to create year plot by various fields
+## Develop function to create sales over time plots by various fields
 sales_over_time_by <- function(data, field) {
-  data %>% 
+  name <- paste0("./jim/images/fieldsOverTime/sales_by_", field, ".svg")
+  plot <- data %>% 
     group_by_(field, "relweek") %>% 
     summarise(total_spend = sum(netspend)) %>% 
     ggplot(aes_string(x = "relweek", y = "total_spend", colour = field)) +
     geom_line(aes_string(colour = field), size = 0.75) +
     theme_minimal()
+  ggsave(name, plot, height = 8, width = 10)
 }
 
+
+# Function to show proportion of sales by field over time
+prop_sales_over_time_by <- function(data, field, data2 = byWeek) {
+  name <- paste0("./jim/images/shares/prop_sales_by_", field, ".svg")
+  data1 <- data %>% 
+            group_by_("relweek", field) %>% 
+            summarise(total_sales = sum(netspend, na.rm = TRUE))
+  plot <- left_join(data1, byWeek) %>% 
+          mutate(prop = total_sales / total_spend) %>% 
+          ggplot(aes_string(x = "relweek", y = "prop", fill = field)) +
+          geom_area(aes_string(fill = field), colour = "ghostwhite") +
+          theme_minimal()
+  ggsave(name, plot, height = 8, width = 10)
+}
+
+# Set up list of fields
 fields <- c("shop_desc", "sub_cat_name", "day") 
-sales_over_time_by(coffee, "day")
+
+# Create plots
+lapply(fields, function(x) sales_over_time_by(coffee, x))
+lapply(fields, function(x) prop_sales_over_time_by(coffee, x))
+
+
+
+

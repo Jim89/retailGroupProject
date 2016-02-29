@@ -22,9 +22,45 @@ complete_cols <- apply(apply(coffee, 2, complete.cases), 2, sum)
 #           mutate(year = as.factor(year),
 #                  day = as.factor(day),
 #                  packs = as.factor(packs))
-                 
 
-# Step 2 - Create some exploratory plots ---------------------------------
+# Step 2 - Simple summaries ----------------------------------------------------
+perWeek <- coffee %>% 
+                group_by(relweek) %>% 
+                summarise(total_packs = sum(packs),
+                          avg_packs = mean(packs),
+                          sd_packs = sd(packs),
+                          total_spend = sum(netspend),
+                          avg_spend = mean(netspend),
+                          sd_spend = sd(netspend))
+
+byDay <- coffee %>% 
+          group_by(day) %>% 
+          summarise(total_packs = sum(packs),
+                    avg_packs = mean(packs),
+                    sd_packs = sd(packs),
+                    total_spend = sum(netspend),
+                    avg_spend = mean(netspend),
+                    sd_spend = sd(netspend))
+
+byShop <- coffee %>% 
+          group_by(shop_desc) %>% 
+          summarise(total_packs = sum(packs),
+                    avg_packs = mean(packs),
+                    sd_packs = sd(packs),
+                    total_spend = sum(netspend),
+                    avg_spend = mean(netspend),
+                    sd_spend = sd(netspend))
+
+bySubCat <- coffee %>% 
+            group_by(sub_cat_name) %>% 
+            summarise(total_packs = sum(packs),
+                      avg_packs = mean(packs),
+                      sd_packs = sd(packs),
+                      total_spend = sum(netspend),
+                      avg_spend = mean(netspend),
+                      sd_spend = sd(netspend))
+
+# Step 3 - Create some exploratory plots ---------------------------------
 # Create function to draw histogram
 gg_hist <- function(data, field){
   is_num <- is.numeric(data[ , field])
@@ -48,9 +84,7 @@ columns <- colnames(coffee)
 lapply(columns, function(x) gg_hist(coffee, x))
 
 # Examine total sales over time
-total_spend <- coffee %>% 
-                group_by(relweek) %>% 
-                summarise(total_spend = sum(netspend, na.rm = TRUE)) %>% 
+total_spend <- perWeek %>% 
                 ggplot(aes(x = relweek, y = total_spend)) +
                 geom_line(color = "steelblue") + 
                 theme_minimal()
@@ -70,6 +104,23 @@ total_spend_by_shop <- coffee %>%
 ggsave("./jim/images/fieldRelationships/spendVsWeekByShop.svg", total_spend_by_shop,
        height = 10, width = 12)
 
+byWeek <- coffee %>% 
+          group_by(relweek) %>% 
+          summarise(total_spend = sum(netspend, na.rm = TRUE)) 
+byShop <- coffee %>% 
+          group_by(shop_desc,
+                    relweek) %>% 
+          summarise(total_spend_shop = sum(netspend, na.rm = TRUE)) 
 
+
+props <- left_join(byShop, byWeek) %>% 
+          mutate(prop = total_spend_shop / total_spend)
+
+mkt_prop <- props %>% 
+            ggplot(aes(x = relweek, y = prop, fill = shop_desc)) +
+            geom_area(aes(fill = shop_desc), colour = "ghostwhite") +
+            theme_minimal()
+ggsave("./jim/images/fieldRelationships/mktShare.svg", mkt_prop,
+       height = 10, width = 12)
 
 

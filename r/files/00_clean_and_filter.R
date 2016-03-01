@@ -27,7 +27,10 @@ coffee_clean <- coffee %>% # Take coffee data then
                 mutate(shop_desc_clean = shop_desc %>% # add cleaner shop name
                                           substring(2) %>% 
                                           tolower() %>% 
-                                          gsub("discounters ","", .))
+                                          gsub("discounters ","", .) %>% 
+                                          gsub("aldi|lidl", "aldi & lidl", .),
+                       # Add identifier field for discounted purchases
+                       discount = ifelse(epromdesc == "No Promotion", 0, 1))
 rm(coffee)
 gc(verbose = FALSE)
 

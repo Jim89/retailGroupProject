@@ -28,4 +28,6 @@ coffee_clean <- coffee %>% # Take coffee data then
                                           substring(2) %>% 
                                           tolower() %>% 
                                           gsub("discounters ","", .))
+rm(coffee)
+gc(verbose = FALSE)
 

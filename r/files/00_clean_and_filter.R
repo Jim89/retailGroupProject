@@ -1,8 +1,6 @@
-# Step 0 - load packages -------------------------------------------------------
-library(dplyr)
+# Step 0 - prepare working environment------------------------------------------
 
-
-# Step 1 - read coffee ----------------------------------------------------------
+# Step 1 - read coffee ---------------------------------------------------------
 coffee <- read.csv("./data/InstantCoffee.csv", 
                    encoding = "latin1", 
                    stringsAsFactors = FALSE) %>% 
@@ -30,7 +28,9 @@ coffee_clean <- coffee %>% # Take coffee data then
                                           gsub("discounters ","", .) %>% 
                                           gsub("aldi|lidl", "aldi & lidl", .),
                        # Add identifier field for discounted purchases
-                       discount = ifelse(epromdesc == "No Promotion", 0, 1))
+                       promo = ifelse(epromdesc == "No Promotion", 0, 1),
+                       # Add price field
+                       price = netspend/packs)
 rm(coffee)
 gc(verbose = FALSE)
 

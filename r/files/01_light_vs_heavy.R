@@ -25,11 +25,13 @@ house_summary <- coffee_clean %>%
 
 # Step 2 - classify into light vs heavy ----------------------------------------
 light_vs_heavy <- house_summary %>% 
-                  mutate(heavy = ifelse(avg_weekly_spend_norm > 0, 1, 0)) %>% 
+                  mutate(heavy = ifelse(avg_weekly_spend >= 
+                                          median(house_summary$avg_weekly_spend)
+                                                 , 1, 0)) %>% 
                   select(house, heavy)
 
 # Step 3 - perform the join ----------------------------------------------------
 coffee_clean <- coffee_clean %>% left_join(light_vs_heavy, by = "house")
 
-rm(house_summary)
+rm(house_summary, light_vs_heavy)
 gc(verbose = FALSE)

@@ -37,6 +37,6 @@ house_cats <- buyingSummary(coffee_clean, "sub_cat_name")
 house_discounts <- coffee_clean %>% 
                     group_by(house) %>% 
                     summarise(buys = n(),
-                              discounts = sum(discount),
-                              prop_discount = discounts/buys)
-qplot(house_discounts$prop_discount)
+                              promos = sum(promo),
+                              prop_promo = promos/buys)
+qplot(house_discounts$prop_promo)

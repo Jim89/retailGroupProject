@@ -1,10 +1,5 @@
 # Step 0 - prepare working environment -----------------------------------------
-normalise <- function(x) {
-  avg <- mean(x)
-  std <- sd(x)
-  ans <- (x-avg)/std
-  return(ans)
-}  
+
 
 # Step 1 - aggregate data ------------------------------------------------------
 house_summary <- coffee_clean %>% 

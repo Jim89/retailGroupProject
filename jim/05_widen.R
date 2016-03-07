@@ -1,29 +1,25 @@
 # Step 0 - prepare environment -------------------------------------------------
 source("./r/analysis.R")
-
-
-# Step 1 - widen
 library(tidyr)
 
-# Agggregate
-coffee_aggregated <- coffee_clean %>% 
-  group_by(relweek, heavy, brand_clean) %>% 
-  summarise(packs = sum(packs),
-            avg_price = mean(price))
 
-coffee_aggregated %>% 
-  filter(heavy == 0) %>% 
-  select(-heavy, - packs) %>% 
-  spread(brand_clean, avg_price) %>% View
-
-filter_and_summarise <- function(data, cust_status = 0) {
+filter_and_widen <- function(data, cust_status = 0) {
   data %>% 
     filter(heavy == cust_status) %>% 
     group_by(relweek, brand_clean) %>% 
     summarise(sales = sum(packs),
               price = mean(price),
               promo_sales = sum(promo)) %>% 
-    mutate(prop_promo = promo_sales / sales)
+    mutate(promo = promo_sales/sales) %>% 
+    select(-promo_sales) %>% 
+    gather(variable, value, -(relweek:brand_clean)) %>% 
+    unite(temp, brand_clean, variable, sep = "_") %>% 
+    spread(temp, value)
 }
 
-heavy <- filter_and_summarise(coffee_clean, cust_status = 1)
+heavy_wide <- filter_and_widen(coffee_clean, 1)
+light_wide <- filter_and_widen(coffee_clean, 0)
+
+colnames(heavy_wide) <- colnames(heavy_wide) %>% gsub(" ", "_", .) %>% tolower()
+colnames(light_wide) <- colnames(light_wide) %>% gsub(" ", "_", .) %>% tolower()
+

@@ -15,8 +15,13 @@ brand <- brand %>%
                 #brand_clean = ifelse(brand_name == "PL_Value", "Supermarket value", brand_clean),
                 brand_clean = ifelse(grepl("PL_", brand_name), "Supermarket own", brand_clean),
                 brand_clean = ifelse(grepl("Nescaf", brand_name), "Nescafe", brand_clean),
-                brand_clean = gsub("\\(.*\\)", "", brand_clean))
+                brand_clean = gsub("\\(.*\\)", "", brand_clean)) %>% 
+        select(-sales)
 
 # Step 3 - join back to coffee data --------------------------------------------
 coffee_clean <- coffee_clean %>% left_join(brand, by = c("brand_name", 
                                                          "total_range_name"))
+
+# Step 4 - clean up ------------------------------------------------------------
+rm(brand)
+gc()

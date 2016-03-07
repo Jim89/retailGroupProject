@@ -17,9 +17,9 @@ filter_and_widen <- function(data, cust_status = 0) {
     spread(temp, value)
 }
 
-heavy_wide <- filter_and_widen(coffee_clean, 1)
-light_wide <- filter_and_widen(coffee_clean, 0)
+heavy <- filter_and_widen(coffee_clean, 1)
+light <- filter_and_widen(coffee_clean, 0)
 
-colnames(heavy_wide) <- colnames(heavy_wide) %>% gsub(" ", "_", .) %>% tolower()
-colnames(light_wide) <- colnames(light_wide) %>% gsub(" ", "_", .) %>% tolower()
+colnames(heavy) <- colnames(heavy) %>% gsub(" ", "_", .) %>% tolower()
+colnames(light) <- colnames(light) %>% gsub(" ", "_", .) %>% tolower()
 

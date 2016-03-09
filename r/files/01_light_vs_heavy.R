@@ -30,5 +30,5 @@ light_vs_heavy <- house_summary %>%
 # Step 3 - perform the join ----------------------------------------------------
 coffee_clean <- coffee_clean %>% left_join(light_vs_heavy, by = "house")
 
-rm(house_summary, light_vs_heavy)
+rm(house_summary, light_vs_heavy, quartiles)
 gc(verbose = FALSE)

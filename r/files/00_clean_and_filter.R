@@ -28,7 +28,9 @@ coffee_clean <- coffee %>% # Take coffee data then
                                           gsub("discounters ","", .) %>% 
                                           gsub("aldi|lidl", "aldi & lidl", .),
                        # Add identifier field for discounted purchases
-                       promo = ifelse(epromdesc == "No Promotion", 0, 1),
+                       promo_price = ifelse(grepl("p off", epromdesc), 1, 0),
+                       promo_units = ifelse(!grepl("p off", epromdesc) & 
+                                            !grepl("No Promotion", epromdesc), 1, 0),
                        # Add price field
                        price = netspend/packs)
 rm(coffee)

@@ -9,9 +9,11 @@ filter_and_widen <- function(data, cust_status = 0) {
     group_by(relweek, brand_clean) %>% 
     summarise(sales = sum(packs),
               price = mean(price),
-              promo_sales = sum(promo)) %>% 
-    mutate(promo = promo_sales/sales) %>% 
-    select(-promo_sales) %>% 
+              promo_sales_price = sum(promo_price),
+              promo_sales_units = sum(promo_units)) %>% 
+    mutate(promo_price = promo_sales_price/sales,
+           promo_units = promo_sales_units/sales) %>% 
+    select(-promo_sales_price, -promo_sales_units) %>% 
     gather(variable, value, -(relweek:brand_clean)) %>% 
     unite(temp, brand_clean, variable, sep = "_") %>% 
     spread(temp, value) %>% 

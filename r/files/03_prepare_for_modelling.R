@@ -5,7 +5,7 @@
 # in to a wide form suitable for modelling
 filter_and_widen <- function(data, cust_status = 0) {
   data %>% 
-    filter(heavy == cust_status) %>% 
+    filter(cust_type == cust_status) %>% 
     group_by(relweek, brand_clean) %>% 
     summarise(sales = sum(packs),
               price = mean(price),
@@ -20,8 +20,8 @@ filter_and_widen <- function(data, cust_status = 0) {
 
 # Step 1 - perform the spread --------------------------------------------------
 # Filter and spread
-heavy <- filter_and_widen(coffee_clean, 1)
-light <- filter_and_widen(coffee_clean, 0)
+heavy <- filter_and_widen(coffee_clean, "heavy")
+light <- filter_and_widen(coffee_clean, "light")
 
 # Create cleaner column names for easier selection
 colnames(heavy) <- colnames(heavy) %>% gsub(" ", "_", .) %>% tolower()

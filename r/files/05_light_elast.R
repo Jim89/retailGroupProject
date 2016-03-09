@@ -1,5 +1,5 @@
 # Step 0 - prepare environment -------------------------------------------------
-source("./r/analysis.R")
+# source("./r/analysis.R")
 
 # Step 1 - log the price variables for log-log model ---------------------------
 light_log <- light[, grepl("price", colnames(light))] %>% 

@@ -1,5 +1,5 @@
 # Step 0 - prepare environment -------------------------------------------------
-source("./r/analysis.R")
+# source("./r/analysis.R")
 
 # Step 1 - log the price variables for log-log model ---------------------------
 heavy_log <- heavy[, grepl("price", colnames(heavy))] %>% 

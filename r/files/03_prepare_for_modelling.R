@@ -11,7 +11,7 @@ filter_and_widen <- function(data, cust_status = 0) {
               price = mean(price),
               promo_sales_price = sum(promo_price),
               promo_sales_units = sum(promo_units)) %>% 
-    mutate(promo_price = promo_sales_price/sales,
+    mutate(promo_cost = promo_sales_price/sales,
            promo_units = promo_sales_units/sales) %>% 
     select(-promo_sales_price, -promo_sales_units) %>% 
     gather(variable, value, -(relweek:brand_clean)) %>% 

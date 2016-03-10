@@ -59,9 +59,10 @@ houses <- house_summary %>%
           left_join(promo_stats) %>% 
           mutate(cust_type = ifelse(avg_weekly_vol <= quartiles[2], "light",
                                     ifelse(avg_weekly_vol >= quartiles[4], "heavy", 
-                                           "medium")))
+                                           "medium"))) %>% 
+          filter(cust_type != "medium")
 
-kfit <- kmeans(houses[, -13], 3, iter.max = 30)
+kfit <- kmeans(houses[, -13], 2, iter.max = 30)
 
 houses$cluster <- kfit$cluster
 
@@ -71,4 +72,5 @@ houses %>%
   rowwise() %>% 
   mutate(avg_prop = mean(prop_promo_price, prop_promo_units)) %>% 
 ggplot(aes(x = avg_weekly_spend, y = avg_prop)) +
-         geom_point(aes(shape = as.factor(cluster), colour = as.factor(cust_type)))
+  geom_point(aes(shape = as.factor(cluster), colour = as.factor(cust_type)))
+  

@@ -37,7 +37,7 @@ status <- df_status(coffee)
 # No NA's, 619 0's for NETSPEND, All of them Promotion = 3F2 -> 3rd package recorded with NETSPEND = 0
 
 # Function to compute repeated rows in order to identify anomalies and cause a little bit of confusion
-Count_Repeat <- function(data)
+count_repeat <- function(data)
   {
   repeated <- data[duplicated(data) | duplicated(data, fromLast=TRUE), ]
   unique_repeated <- unique(repeated)
@@ -59,13 +59,13 @@ Count_Repeat <- function(data)
     }
     else{count <- c(count, n + 1)}
   }
-  count_repeat <- cbind(unique_repeated, count)
-  return (count_repeat)
+  result <- cbind(unique_repeated, count)
+  return (result)
 }
 
 # Call function to create data frame including the number of 'repeats'
 ordered_coffee <- coffee[order(coffee$HOUSE, coffee$NETSPEND), ]
-count_repeat <- Count_Repeat(ordered_coffee)
+repeated_rows <- count_repeat(ordered_coffee)
 
 # Compute frequencies of households
 frequencies <- as.data.frame(table(coffee$HOUSE))

@@ -34,7 +34,7 @@ for (i in 1:nrow(coffee))
 # Step 2 - Sanity check----------------------------------------------
 # Check for 0's and NA's
 status <- df_status(coffee)
-# No NA's, 619 0's for NETSPEND, All of them Promotion = 3F2 -> 3rd package recorded with NETSPEND = 0
+# No NA's, 619 0's for NETSPEND, All of them Promotion == 3F2 -> 3rd pack recorded with NETSPEND == 0
 
 # Function to compute repeated rows in order to identify anomalies and cause a little bit of confusion
 count_repeat <- function(data)
@@ -70,4 +70,4 @@ repeated_rows <- count_repeat(ordered_coffee)
 # Compute frequencies of households
 frequencies <- as.data.frame(table(coffee$HOUSE))
 names(frequencies) <- c("house", "frequency") # rename columns
-# ~10 Households which went to the shops >= 99 times
+# ~10 Households which went to the shops >= 99 times, large positive skew

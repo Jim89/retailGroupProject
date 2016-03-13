@@ -34,8 +34,7 @@ for (i in 1:nrow(coffee))
 
 # Step 2 - Sanity check--------------------------------------------------------------------------------
 # Check for 0's and NA's
-status <- df_status(coffee)
-# No NA's, 619 0's for NETSPEND, All of them Promotion == 3F2 -> 3rd pack recorded with NETSPEND == 0
+status <- df_status(coffee) # No NA's, 619 0's for NETSPEND, 3F2 -> 3rd pack recorded with NETSPEND == 0
 
 # Function to compute repeated rows in order to identify anomalies
 count_repeat <- function(data)
@@ -56,7 +55,8 @@ count_repeat <- function(data)
       else {n <- 1}
     }
     else {
-      count <- c(count, n + 1)}
+      count <- c(count, n + 1)
+    }
   }
   result <- cbind(unique_repeated, count)
   return (result)

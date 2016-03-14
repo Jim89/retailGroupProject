@@ -11,12 +11,12 @@ light_log <- light[, grepl("price", colnames(light))] %>%
 # Set up overall regression for each brand using all variables
 # n.b. the dot (".") syntax stands for "all other variables in the data")
 # Log each sales (i.e. units) individual to achieve log-log model
-carte <- lm(log(carte_noire_sales) ~ ., data = light_log)
-douwe <- lm(log(douwe_egbert_sales) ~ ., data = light_log)
-kenco <- lm(log(kenco_sales) ~ ., data = light_log)
-nesca <- lm(log(nescafe_sales) ~ ., data = light_log)
-other <- lm(log(other_brands_sales) ~ ., data = light_log)
-super <- lm(log(supermarket_own_sales) ~ ., data = light_log)
+carte <- lm(carte_noire_sales ~ ., data = light)
+douwe <- lm(douwe_egbert_sales ~ ., data = light)
+kenco <- lm(kenco_sales ~ ., data = light)
+nesca <- lm(nescafe_sales ~ ., data = light)
+other <- lm(other_brands_sales ~ ., data = light)
+super <- lm(supermarket_own_sales ~ ., data = light)
 
 # Stepwise regression to find best model for each brand
 carte_fit <- step(carte, direction = "both", trace = FALSE)
@@ -40,12 +40,12 @@ extract_elasticities <- function(model_fit) {
   }
   
   # Use helper function to extract each brand's coefficients for the model
-  carte_coef <- extract_coef("carte_noire_price")
-  douwe_coef <- extract_coef("douwe_egbert_price")
-  kenco_coef <- extract_coef("kenco_price")
-  nesca_coef <- extract_coef("nescafe_price")
-  other_coef <- extract_coef("other_brands_price")
-  super_coef <- extract_coef("supermarket_own_price")
+  carte_coef <- extract_coef("carte_noire_price") * mean(light$carte_noire_price)
+  douwe_coef <- extract_coef("douwe_egbert_price") * mean(light$douwe_egbert_price)
+  kenco_coef <- extract_coef("kenco_price") * mean(light$kenco_price)
+  nesca_coef <- extract_coef("nescafe_price") * mean(light$nescafe_price)
+  other_coef <- extract_coef("other_brands_price") * mean(light$other_brands_price)
+  super_coef <- extract_coef("supermarket_own_price") * mean(light$supermarket_own_price)
   
   # Create matrix that stores results in known order
   results <- matrix(c(carte_coef, douwe_coef, kenco_coef, nesca_coef, 
@@ -59,12 +59,12 @@ extract_elasticities <- function(model_fit) {
 }
 
 # Compute elasticities for each brand  
-carte_elasts <- extract_elasticities(carte_fit)
-douwe_elasts <- extract_elasticities(douwe_fit)
-kenco_elasts <- extract_elasticities(kenco_fit)
-nesca_elasts <- extract_elasticities(nesca_fit)
-other_elasts <- extract_elasticities(other_fit)
-super_elasts <- extract_elasticities(super_fit)
+carte_elasts <- extract_elasticities(carte_fit) / mean(light$carte_noire_sales)
+douwe_elasts <- extract_elasticities(douwe_fit) / mean(light$douwe_egbert_sales)
+kenco_elasts <- extract_elasticities(kenco_fit) / mean(light$kenco_sales)
+nesca_elasts <- extract_elasticities(nesca_fit) / mean(light$nescafe_sales)
+other_elasts <- extract_elasticities(other_fit) / mean(light$other_brands_sales)
+super_elasts <- extract_elasticities(super_fit) / mean(light$supermarket_own_sales)
 
 # Combine elasticities for each brand into single matrix
 light_elasticities <- rbind(carte_elasts,

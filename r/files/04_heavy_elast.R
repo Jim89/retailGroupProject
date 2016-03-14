@@ -11,12 +11,12 @@ heavy_log <- heavy[, grepl("price", colnames(heavy))] %>%
 # Set up overall regression for each brand using all variables
 # n.b. the dot (".") syntax stands for "all other variables in the data")
 # Log each sales (i.e. units) individual to achieve log-log model
-carte <- lm(log(carte_noire_sales) ~ ., data = heavy_log)
-douwe <- lm(log(douwe_egbert_sales) ~ ., data = heavy_log)
-kenco <- lm(log(kenco_sales) ~ ., data = heavy_log)
-nesca <- lm(log(nescafe_sales) ~ ., data = heavy_log)
-other <- lm(log(other_brands_sales) ~ ., data = heavy_log)
-super <- lm(log(supermarket_own_sales) ~ ., data = heavy_log)
+carte <- lm(log(carte_noire_sales) ~ ., data = heavy)
+douwe <- lm(log(douwe_egbert_sales) ~ ., data = heavy)
+kenco <- lm(log(kenco_sales) ~ ., data = heavy)
+nesca <- lm(log(nescafe_sales) ~ ., data = heavy)
+other <- lm(log(other_brands_sales) ~ ., data = heavy)
+super <- lm(log(supermarket_own_sales) ~ ., data = heavy)
 
 # Stepwise regression to find best model for each brand
 carte_fit <- step(carte, direction = "both", trace = FALSE)
@@ -40,12 +40,12 @@ extract_elasticities <- function(model_fit) {
   }
   
   # Use helper function to extract each brand's coefficients for the model
-  carte_coef <- extract_coef("carte_noire_price")
-  douwe_coef <- extract_coef("douwe_egbert_price")
-  kenco_coef <- extract_coef("kenco_price")
-  nesca_coef <- extract_coef("nescafe_price")
-  other_coef <- extract_coef("other_brands_price")
-  super_coef <- extract_coef("supermarket_own_price")
+  carte_coef <- extract_coef("carte_noire_price") * mean(heavy$carte_noire_price)
+  douwe_coef <- extract_coef("douwe_egbert_price") * mean(heavy$douwe_egbert_price)
+  kenco_coef <- extract_coef("kenco_price") * mean(heavy$kenco_price)
+  nesca_coef <- extract_coef("nescafe_price") * mean(heavy$nescafe_price)
+  other_coef <- extract_coef("other_brands_price") * mean(heavy$other_brands_price)
+  super_coef <- extract_coef("supermarket_own_price") * mean(heavy$supermarket_own_price)
   
   # Create matrix that stores results in known order
   results <- matrix(c(carte_coef, douwe_coef, kenco_coef, nesca_coef, 

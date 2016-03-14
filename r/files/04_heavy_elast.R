@@ -142,5 +142,5 @@ idx <- grep("coffee_clean|heavy|light|heavy_log|heavy_elasticities_clean|normali
 objects <- objects[-idx]
 
 rm(list = objects)
-rm(objects, idx, heavy_elasticities, heavy_signifs)
+rm(objects, idx, heavy_elasticities, heavy_signifs, heavy_log)
 gc()

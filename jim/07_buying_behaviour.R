@@ -1,3 +1,4 @@
+library(ggbiplot)
 library(dplyr)
 library(ggplot2)
 # library(devtools)
@@ -83,13 +84,26 @@ houses_pca <- prcomp(houses %>% select(-house, - cust_type),
 
 
 
+theme <- theme(legend.position = "bottom",
+           axis.text.y = element_text(size = 16, colour = "black"),
+           axis.text.x = element_text(size = 16, colour = "black", angle = -90),
+           legend.text = element_text(size = 16),
+           legend.title = element_text(size = 16),
+           title = element_text(size = 16),
+           panel.grid.minor.x = element_blank(),
+           panel.grid.major.x = element_line(colour = "grey", linetype = "dotted"),
+           panel.grid.minor.y = element_blank(),
+           panel.grid.major.y = element_line(colour = "grey", linetype = "dotted"),
+           panel.margin.y = unit(0.1, units = "in"),
+           panel.background = element_rect(fill = "white", colour = "lightgrey"),
+           panel.border = element_rect(colour = "black", fill = NA))
 
-library(ggbiplot)
 
 ggbiplot(houses_pca, obs.scale = 1, var.scale = 1, 
          groups = houses$cust_type, ellipse = TRUE, 
-         circle = F, alpha = 0.25, var.axes = F) +
+         circle = F, alpha = 0.25, var.axes = F, 
+         size = 2.5) +
   scale_color_brewer(type = "qual", palette = "Dark2") + 
-  theme(legend.direction = 'horizontal', 
-               legend.position = 'top')
+  guides(colour = guide_legend(title = "Customer Type")) +
+  theme
 

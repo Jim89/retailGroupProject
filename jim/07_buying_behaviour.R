@@ -66,19 +66,13 @@ houses <- house_summary %>%
                                            "medium"))) %>% 
           filter(cust_type != "medium")
 
-kfit <- kmeans(houses[, -13], 2, iter.max = 200)
 
+# kmeans
+kfit <- kmeans(houses[, -c(1, 13)], 2, iter.max = 200)
 houses$cluster <- kfit$cluster
 
-table(houses$cust_type, houses$cluster)
 
-houses %>% 
-  rowwise() %>% 
-  mutate(avg_prop = mean(prop_promo_price, prop_promo_units)) %>% 
-ggplot(aes(x = avg_weekly_spend, y = avg_prop)) +
-  geom_point(aes(shape = as.factor(cluster), colour = as.factor(cust_type)))
-
-houses_pca <- prcomp(houses %>% select(-house, - cust_type),
+houses_pca <- prcomp(houses %>% select(-house, -cust_type, -cluster),
                      center = TRUE,
                      scale = TRUE)
 
@@ -97,6 +91,15 @@ theme <- theme(legend.position = "bottom",
            panel.margin.y = unit(0.1, units = "in"),
            panel.background = element_rect(fill = "white", colour = "lightgrey"),
            panel.border = element_rect(colour = "black", fill = NA))
+
+
+ggbiplot(houses_pca, obs.scale = 1, var.scale = 1, 
+         groups = as.factor(houses$cluster), ellipse = TRUE, 
+         circle = F, alpha = 0.25, var.axes = F, 
+         size = 2.5) +
+  scale_color_brewer(type = "qual", palette = "Dark2") + 
+  guides(colour = guide_legend(title = "Customer Type")) +
+  theme
 
 
 ggbiplot(houses_pca, obs.scale = 1, var.scale = 1, 

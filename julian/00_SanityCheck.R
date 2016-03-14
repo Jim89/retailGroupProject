@@ -72,19 +72,21 @@ names(frequencies) <- c("house", "frequency")
 
 # Function to identify quase-identical rows (i.e. only the column-value for NETSPEND differs)
 unique_coffee <- unique(coffee)
-unique_coffee <- unique_coffee[order(unique_coffee$relweek,unique_coffee$shop_desc,unique_coffee$total_range_name,unique_coffee$HOUSE,unique_coffee$DAY),]
+unique_coffee <- unique_coffee[order(unique_coffee$relweek, unique_coffee$shop_desc, unique_coffee$total_range_name,
+                                     unique_coffee$HOUSE, unique_coffee$DAY), ]
+
 df <- data.frame()
-for (r in 1:(nrow(unique_coffee)-1)){
+for (r in 1:(nrow(unique_coffee) - 1)){
   same = TRUE
-  for (c in 1:(ncol(unique_coffee)-1)){
-    if (unique_coffee[r,c] != unique_coffee[r+1,c]){
+  for (c in 1:(ncol(unique_coffee) - 1)){
+    if (unique_coffee[r, c] != unique_coffee[r + 1, c]){
       same = FALSE
       break
     }
   }
   if (same == TRUE){
-    df <- rbind(df,unique_coffee[r,])
-    df <- rbind(df,unique_coffee[r+1,])
+    df <- rbind(df, unique_coffee[r, ])
+    df <- rbind(df, unique_coffee[r + 1, ])
   }
 }
 anomalies <- unique(df)

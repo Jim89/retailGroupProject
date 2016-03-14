@@ -67,6 +67,13 @@ for (i in 1:K) {
   nesca <- lm(log(nescafe_sales) ~ ., data = train)
   other <- lm(log(other_brands_sales) ~ ., data = train)
   super <- lm(log(supermarket_own_sales) ~ ., data = train)
+  } else if (model == "log-log") {
+    carte <- lm(log(carte_noire_sales) ~ ., data = train)
+    douwe <- lm(log(douwe_egbert_sales) ~ ., data = train)
+    kenco <- lm(log(kenco_sales) ~ ., data = train)
+    nesca <- lm(log(nescafe_sales) ~ ., data = train)
+    other <- lm(log(other_brands_sales) ~ ., data = train)
+    super <- lm(log(supermarket_own_sales) ~ ., data = train)
   } else {
     carte <- lm(carte_noire_sales ~ ., data = train)
     douwe <- lm(douwe_egbert_sales ~ ., data = train)
@@ -98,14 +105,34 @@ for (i in 1:K) {
     diff_sq <- diff^2
     return(mean(diff_sq, na.rm = TRUE))
   }
-
-  # Compute the cross-validation error (MSE) for each brand
-  carte_error <- mse(cv$carte_noire_sales, carte_pred)
-  douwe_error <- mse(cv$douwe_egbert_sales, douwe_pred)
-  kenco_error <- mse(cv$kenco_sales, kenco_pred)
-  nesca_error <- mse(cv$nescafe_sales, nesca_pred)
-  other_error <- mse(cv$other_brands_sales, other_pred)
-  super_error <- mse(cv$supermarket_own_sales, super_pred)
+  
+  if (model == "level") {
+    # Compute the cross-validation error (MSE) for each brand
+    carte_error <- mse(cv$carte_noire_sales, carte_pred)
+    douwe_error <- mse(cv$douwe_egbert_sales, douwe_pred)
+    kenco_error <- mse(cv$kenco_sales, kenco_pred)
+    nesca_error <- mse(cv$nescafe_sales, nesca_pred)
+    other_error <- mse(cv$other_brands_sales, other_pred)
+    super_error <- mse(cv$supermarket_own_sales, super_pred)
+  } else if (model == "semi-log") {
+    # Compute the cross-validation error (MSE) for each brand
+    carte_error <- mse(cv$carte_noire_sales, exp(carte_pred))
+    douwe_error <- mse(cv$douwe_egbert_sales, exp(douwe_pred))
+    kenco_error <- mse(cv$kenco_sales, exp(kenco_pred))
+    nesca_error <- mse(cv$nescafe_sales, exp(nesca_pred))
+    other_error <- mse(cv$other_brands_sales, exp(other_pred))
+    super_error <- mse(cv$supermarket_own_sales, exp(super_pred))
+  } else if (model == "log-log") {
+    # Compute the cross-validation error (MSE) for each brand
+    carte_error <- mse(cv$carte_noire_sales, exp(carte_pred))
+    douwe_error <- mse(cv$douwe_egbert_sales, exp(douwe_pred))
+    kenco_error <- mse(cv$kenco_sales, exp(kenco_pred))
+    nesca_error <- mse(cv$nescafe_sales, exp(nesca_pred))
+    other_error <- mse(cv$other_brands_sales, exp(other_pred))
+    super_error <- mse(cv$supermarket_own_sales, exp(super_pred)) 
+  } else {
+    stop()
+  }
   
   # Compute average error across each of the 6 brands
   avg_error <- mean(carte_error, douwe_error, kenco_error, nesca_error,

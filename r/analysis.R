@@ -2,6 +2,7 @@
 library(dplyr)
 library(tidyr)
 library(broom)
+library(readr)
 
 # Step 1 - source user-defined functions----------------------------------------
 source("./r/functions/normalise.R")
@@ -15,4 +16,5 @@ source("./r/files/03_prepare_for_modelling.R")
 source("./r/files/04_heavy_elast.R")
 source("./r/files/05_light_elast.R")
 source("./r/files/06_clout_and_vuln_stats.R")
+source("./r/files/07_write_elasticity_results_to_file.R")
 

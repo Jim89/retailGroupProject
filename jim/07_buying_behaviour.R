@@ -1,5 +1,8 @@
 library(dplyr)
 library(ggplot2)
+# library(devtools)
+# install_github("vqv/ggbiplot")
+
 source("./r/files/00_clean_and_filter.R")
 source("./r/files/01_light_vs_heavy.R")
 source("./r/files/02_clean_brands.R")
@@ -62,7 +65,7 @@ houses <- house_summary %>%
                                            "medium"))) %>% 
           filter(cust_type != "medium")
 
-kfit <- kmeans(houses[, -13], 2, iter.max = 30)
+kfit <- kmeans(houses[, -13], 2, iter.max = 200)
 
 houses$cluster <- kfit$cluster
 
@@ -73,4 +76,20 @@ houses %>%
   mutate(avg_prop = mean(prop_promo_price, prop_promo_units)) %>% 
 ggplot(aes(x = avg_weekly_spend, y = avg_prop)) +
   geom_point(aes(shape = as.factor(cluster), colour = as.factor(cust_type)))
-  
+
+houses_pca <- prcomp(houses %>% select(-house, - cust_type),
+                     center = TRUE,
+                     scale = TRUE)
+
+
+
+
+library(ggbiplot)
+
+ggbiplot(houses_pca, obs.scale = 1, var.scale = 1, 
+         groups = houses$cust_type, ellipse = TRUE, 
+         circle = F, alpha = 0.25, var.axes = F) +
+  scale_color_brewer(type = "qual", palette = "Dark2") + 
+  theme(legend.direction = 'horizontal', 
+               legend.position = 'top')
+

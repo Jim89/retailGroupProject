@@ -2,12 +2,14 @@
 library(ggbiplot)
 library(dplyr)
 library(ggplot2)
+library(randomForest)
 # library(devtools)
 # install_github("vqv/ggbiplot")
 
 source("./r/files/00_clean_and_filter.R")
 source("./r/files/01_light_vs_heavy.R")
 source("./r/files/02_clean_brands.R")
+
 
 # Step 1 - create house level summary stats ------------------------------------
 house_summary <- coffee_clean %>% 
@@ -43,8 +45,7 @@ distinct_brands <- coffee_clean %>%
 spend_stats <- coffee_clean %>% 
                 group_by(house) %>% 
                 summarise(max_spend = max(netspend),
-                          min_spend = min(netspend),
-                          avg_spend = mean(netspend))
+                          min_spend = min(netspend))
 
 promo_stats <- coffee_clean %>% 
                 group_by(house) %>% 
@@ -63,8 +64,8 @@ houses <- house_summary %>%
           left_join(distinct_brands) %>% 
           left_join(spend_stats) %>% 
           left_join(promo_stats) %>% 
-          mutate(cust_type = ifelse(avg_weekly_vol <= quartiles[2], "light",
-                                    ifelse(avg_weekly_vol >= quartiles[4], "heavy", 
+          mutate(cust_type = ifelse(avg_weekly_vol <= quartiles[2], "Light",
+                                    ifelse(avg_weekly_vol >= quartiles[4], "Heavy", 
                                            "medium"))) %>% 
           filter(cust_type != "medium") 
 
@@ -86,10 +87,8 @@ houses_pca <- prcomp(houses %>% select(-house, -cust_type, -cluster, -avg_weekly
                      scale = TRUE)
 
 # Step 4 - Perform random forest prediction for variable importance ------------
-library(randomForest)
-
 rf <- randomForest(as.factor(cust_type) ~ ., 
-                   data = houses %>% select(-house, -cluster, -avg_weekly_vol),
+                   data = houses %>% select(-house, -avg_weekly_vol),
                    importance = TRUE)
 
 varImpPlot(rf, 
@@ -105,9 +104,11 @@ theme <- theme(legend.position = "bottom",
            legend.text = element_text(size = 16),
            legend.title = element_text(size = 16),
            title = element_text(size = 16),
+           strip.text = element_text(size = 16, colour = "black"),
+           strip.background = element_rect(fill = "white"),
            panel.grid.minor.x = element_blank(),
            panel.grid.major.x = element_line(colour = "grey", linetype = "dotted"),
-           panel.grid.minor.y = element_blank(),
+           panel.grid.minor.y = element_line(colour = "lightgrey", linetype = "dotted"),
            panel.grid.major.y = element_line(colour = "grey", linetype = "dotted"),
            panel.margin.y = unit(0.1, units = "in"),
            panel.background = element_rect(fill = "white", colour = "lightgrey"),
@@ -143,14 +144,32 @@ dist_split <- function(data, field) {
     theme
 }
 
+
+
 # Split plot by prop promo price
-dist_split(houses, "prop_promo_price") + xlab("Proportion of goods bought on price promotion")
+dist_split(houses, "prop_promo_price") + 
+  xlab("Proportion of goods bought on price promotion") 
+  ggsave("./jim/images/buying_behaviour/prop_promo.svg")
 
 # Split plot by max spend
-dist_split(houses, "max_spend") + xlab("Maximum spend in any single trip")
+dist_split(houses, "max_spend") + xlab("Maximum spend in any single trip (£)")
+ggsave("./jim/images/buying_behaviour/max_spend.svg")
 
 # Split plot by avg_weekly_spend
-dist_split(houses, "avg_weekly_spend") + xlab("Average weekly spend")
+dist_split(houses, "avg_weekly_spend") + xlab("Average weekly spend (£)")
+ggsave("./jim/images/buying_behaviour/avg_weekly_spend.svg")
 
+# Split plot by avg_weekly_visits
+dist_split(houses, "avg_weekly_visits") + xlab("Average weekly visits")
+ggsave("./jim/images/buying_behaviour/avg_weekly_visits.svg")
+
+# Split plot by brands
+dist_split(houses, "brands") + xlab("Distinct brands purchased") +
+  scale_x_continuous(breaks = seq(1, 6, 1))
+ggsave("./jim/images/buying_behaviour/distinct_brands_purhcased.svg")
+
+# Split plot by shops
+dist_split(houses, "shops") + xlab("Distinct stores shopped at")
+ggsave("./jim/images/buying_behaviour/distinct_stores.svg")
 
 

@@ -20,7 +20,7 @@ coffee_clean <- coffee %>% # Take coffee data then
                        & # And
                        sub_cat_name %in% c("Granules", # Only take certain coffees
                                            "Freeze Dried",
-                                           "Decaf Freeze Drief", 
+                                           "Decaf Freeze Dried", 
                                            "Micro Ground")) %>% # then...
                 mutate(shop_desc_clean = shop_desc %>% # add cleaner shop name
                                           substring(2) %>% 

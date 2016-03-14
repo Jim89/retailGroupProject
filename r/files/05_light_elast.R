@@ -27,7 +27,7 @@ other_fit <- step(other, direction = "both", trace = FALSE)
 super_fit <- step(super, direction = "both", trace = FALSE)
 
 # Step 3 - Compute elasticities ------------------------------------------------
-extract_elasticities <- function(model_fit) {
+extract_elasticities_light <- function(model_fit) {
   # Extract tidy coefficients table from model
   coefs <- tidy(model_fit)
   
@@ -59,12 +59,12 @@ extract_elasticities <- function(model_fit) {
 }
 
 # Compute elasticities for each brand  
-carte_elasts <- extract_elasticities(carte_fit) / mean(light$carte_noire_sales)
-douwe_elasts <- extract_elasticities(douwe_fit) / mean(light$douwe_egbert_sales)
-kenco_elasts <- extract_elasticities(kenco_fit) / mean(light$kenco_sales)
-nesca_elasts <- extract_elasticities(nesca_fit) / mean(light$nescafe_sales)
-other_elasts <- extract_elasticities(other_fit) / mean(light$other_brands_sales)
-super_elasts <- extract_elasticities(super_fit) / mean(light$supermarket_own_sales)
+carte_elasts <- extract_elasticities_light(carte_fit) / mean(light$carte_noire_sales)
+douwe_elasts <- extract_elasticities_light(douwe_fit) / mean(light$douwe_egbert_sales)
+kenco_elasts <- extract_elasticities_light(kenco_fit) / mean(light$kenco_sales)
+nesca_elasts <- extract_elasticities_light(nesca_fit) / mean(light$nescafe_sales)
+other_elasts <- extract_elasticities_light(other_fit) / mean(light$other_brands_sales)
+super_elasts <- extract_elasticities_light(super_fit) / mean(light$supermarket_own_sales)
 
 # Combine elasticities for each brand into single matrix
 light_elasticities <- rbind(carte_elasts,

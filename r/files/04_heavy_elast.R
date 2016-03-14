@@ -27,7 +27,7 @@ other_fit <- step(other, direction = "both", trace = FALSE)
 super_fit <- step(super, direction = "both", trace = FALSE)
 
 # Step 3 - Compute elasticities ------------------------------------------------
-extract_elasticities <- function(model_fit) {
+extract_elasticities_heavy <- function(model_fit) {
   # Extract tidy coefficients table from model
   coefs <- tidy(model_fit)
   
@@ -59,12 +59,12 @@ extract_elasticities <- function(model_fit) {
 }
 
 # Compute elasticities for each brand  
-carte_elasts <- extract_elasticities(carte_fit)
-douwe_elasts <- extract_elasticities(douwe_fit)
-kenco_elasts <- extract_elasticities(kenco_fit)
-nesca_elasts <- extract_elasticities(nesca_fit)
-other_elasts <- extract_elasticities(other_fit)
-super_elasts <- extract_elasticities(super_fit)
+carte_elasts <- extract_elasticities_heavy(carte_fit)
+douwe_elasts <- extract_elasticities_heavy(douwe_fit)
+kenco_elasts <- extract_elasticities_heavy(kenco_fit)
+nesca_elasts <- extract_elasticities_heavy(nesca_fit)
+other_elasts <- extract_elasticities_heavy(other_fit)
+super_elasts <- extract_elasticities_heavy(super_fit)
 
 # Combine elasticities for each brand into single matrix
 heavy_elasticities <- rbind(carte_elasts,

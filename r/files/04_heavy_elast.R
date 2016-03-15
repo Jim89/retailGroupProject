@@ -138,7 +138,7 @@ heavy_elasticities_clean <- heavy_elasticities * heavy_signifs
 
 # Step 5 - Clean up and garbage collect ----------------------------------------
 objects <- ls()
-idx <- grep("coffee_clean|heavy|light|heavy_log|heavy_elasticities_clean|normalise", objects)
+idx <- grep("coffee_clean|heavy|light|heavy_log|heavy_elasticities_clean|normalise|toproper", objects)
 objects <- objects[-idx]
 
 rm(list = objects)

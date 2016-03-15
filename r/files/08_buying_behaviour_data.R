@@ -65,7 +65,7 @@ write_csv(buying_behaviour, "./data/results/buying_behaviour.csv")
 
 # Step 3 - clean up and garbage collect ----------------------------------------
 objects <- ls()
-idx <- grep("clout_and_vuln_stats|buying_behaviour|coffee_clean|heavy|light|heavy_elasticities_clean|light_elasticities_clean|normalise", objects)
+idx <- grep("clout_and_vuln_stats|buying_behaviour|coffee_clean|heavy|light|heavy_elasticities_clean|light_elasticities_clean|normalise|toproper", objects)
 objects <- objects[-idx]
 
 rm(list = objects)

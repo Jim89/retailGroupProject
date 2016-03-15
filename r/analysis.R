@@ -45,7 +45,7 @@ theme <- theme(legend.position = "bottom",
 
 # Run plotting code
 source("./r/files/10_clout_and_vuln_map.R")
-
+source("./r/file/11_variable_importance_plot.R")
 source("./r/files/12_buying_behaviour_charts.R")
 
 
@@ -57,6 +57,9 @@ if (!dir.exists("./visualisations")) {
 ggsave("./visualisations/clout_and_vuln_map.svg", clout_and_vuln_map)
 
 # Save variable importance plot
+svg(filename = "./visualisations/var_imp_plot.svg")
+var_imp(rf)
+dev.off()
 
 # Find all buying behaviour plots in the workspace (all prefaced with "bb_")
 bbplots <- ls()[grep("bb_", ls())] 

@@ -4,6 +4,7 @@ library(tidyr)
 library(broom)
 library(readr)
 library(randomForest)
+library(ggplot2)
 
 # Step 1 - source user-defined functions----------------------------------------
 source("./r/functions/normalise.R")

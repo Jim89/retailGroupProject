@@ -17,8 +17,5 @@ rf <- randomForest(as.factor(cust_type) ~ .,
                    importance = TRUE,
                    ntree = 50)
 
-rf_variable_importances <- rf$importance %>% tidy()
-
-
 # Step 3 - remove objects and gc -----------------------------------------------
 rm(kfit)

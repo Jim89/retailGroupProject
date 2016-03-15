@@ -45,7 +45,7 @@ theme <- theme(legend.position = "bottom",
 
 # Run plotting code
 source("./r/files/10_clout_and_vuln_map.R")
-source("./r/file/11_variable_importance_plot.R")
+source("./r/files/11_variable_importance_plot.R")
 source("./r/files/12_buying_behaviour_charts.R")
 
 

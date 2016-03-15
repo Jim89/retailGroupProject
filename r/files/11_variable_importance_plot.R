@@ -9,7 +9,8 @@ rownames(rforest$importance) <- rownames(rforest$importance) %>%
                             gsub("promo", "promotion", .) %>% 
                             toproper()
 colnames(rforest$importance)[3] <- "Importance"
-varImpPlot(rforest, type = 1, main = "", cex = 1, color = "black")
+varImpPlot(rforest, type = 1, main = "Variables important for classifying\n light vs heavy users", 
+           cex = 1, color = "black")
 }
 
 

@@ -21,4 +21,4 @@ rf_variable_importances <- rf$importance %>% tidy()
 
 
 # Step 3 - remove objects and gc -----------------------------------------------
-rm(kfit, rf)
+rm(kfit)

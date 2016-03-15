@@ -1,5 +1,5 @@
 # Step 0 - set up environment --------------------------------------------------
-library(ggbiplot)
+# library(ggbiplot)
 library(dplyr)
 library(ggplot2)
 library(randomForest)
@@ -114,23 +114,23 @@ theme <- theme(legend.position = "bottom",
            panel.background = element_rect(fill = "white", colour = "lightgrey"),
            panel.border = element_rect(colour = "black", fill = NA))
 
-## PCA plot coloured by k-means clusters
-k_means_pcs <- ggbiplot(houses_pca, obs.scale = 1, var.scale = 1, 
-                         groups = as.factor(houses$cluster), ellipse = TRUE, 
-                         circle = F, alpha = 0.25, var.axes = F, 
-                         size = 2.5) +
-                scale_color_brewer(type = "qual", palette = "Dark2") + 
-                guides(colour = guide_legend(title = "Customer Type")) +
-                theme
-
-# PCA plot coloured by customer type
-cust_type_pca <- ggbiplot(houses_pca, obs.scale = 1, var.scale = 1, 
-                           groups = houses$cust_type, ellipse = TRUE, 
-                           circle = F, alpha = 0.25, var.axes = F, 
-                           size = 2.5) +
-                  scale_color_brewer(type = "qual", palette = "Dark2") + 
-                  guides(colour = guide_legend(title = "Customer Type")) +
-                  theme
+# ## PCA plot coloured by k-means clusters
+# k_means_pcs <- ggbiplot(houses_pca, obs.scale = 1, var.scale = 1, 
+#                          groups = as.factor(houses$cluster), ellipse = TRUE, 
+#                          circle = F, alpha = 0.25, var.axes = F, 
+#                          size = 2.5) +
+#                 scale_color_brewer(type = "qual", palette = "Dark2") + 
+#                 guides(colour = guide_legend(title = "Customer Type")) +
+#                 theme
+# 
+# # PCA plot coloured by customer type
+# cust_type_pca <- ggbiplot(houses_pca, obs.scale = 1, var.scale = 1, 
+#                            groups = houses$cust_type, ellipse = TRUE, 
+#                            circle = F, alpha = 0.25, var.axes = F, 
+#                            size = 2.5) +
+#                   scale_color_brewer(type = "qual", palette = "Dark2") + 
+#                   guides(colour = guide_legend(title = "Customer Type")) +
+#                   theme
 
 # Function to visualise field split by light vs heavy 
 dist_split <- function(data, field) {

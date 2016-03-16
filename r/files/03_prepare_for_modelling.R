@@ -4,7 +4,8 @@
 # heavy or light), aggregates to a weekly level and then spreads the data
 # in to a wide form suitable for modelling
 filter_and_widen <- function(data, cust_status = 0) {
-  data %>% 
+  # Filter and widen at brand level
+  brand_level <- data %>% 
     filter(cust_type == cust_status) %>% 
     group_by(relweek, brand_clean) %>% 
     summarise(sales = sum(packs),
@@ -18,6 +19,29 @@ filter_and_widen <- function(data, cust_status = 0) {
     unite(temp, brand_clean, variable, sep = "_") %>% 
     spread(temp, value) %>% 
     ungroup()
+  
+  colnames(brand_level) <- colnames(brand_level) %>% gsub(" ", "_", .) %>% tolower()
+  
+  # Calculate total sales
+  total_sales <- data %>% 
+    filter(cust_type == cust_status) %>% 
+    group_by(relweek) %>% 
+    summarise(total_sold = sum(packs))
+  
+  # Join together
+  overall <- left_join(brand_level, total_sales)
+  
+  # Create brand shares
+  overall <- overall %>% 
+    mutate(carte_noire_share = carte_noire_sales / total_sold,
+           douwe_egbert_share = douwe_egbert_sales / total_sold,
+           kenco_share = kenco_sales / total_sold,
+           nescafe_share = nescafe_sales / total_sold,
+           other_brands_share = other_brands_sales / total_sold,
+           supermarket_own_share = supermarket_own_sales / total_sold) %>% 
+    select(-total_sold)
+  
+  return(brand_level)
 }
 
 # Step 1 - perform the spread --------------------------------------------------
@@ -25,9 +49,8 @@ filter_and_widen <- function(data, cust_status = 0) {
 heavy <- filter_and_widen(coffee_clean, "heavy")
 light <- filter_and_widen(coffee_clean, "light")
 
-# Create cleaner column names for easier selection
-colnames(heavy) <- colnames(heavy) %>% gsub(" ", "_", .) %>% tolower()
-colnames(light) <- colnames(light) %>% gsub(" ", "_", .) %>% tolower()
+
+
 
 
 

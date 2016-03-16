@@ -1,42 +1,37 @@
-trans_id <- coffee_clean %>% 
-            select(relweek, day, house) %>% 
-            distinct() %>% 
-            mutate(transaction_id = row_number())
+# Step 0 - prepare env ---------------------------------------------------------
 
+
+# Step 1 - prepare data --------------------------------------------------------
+# Create transaction ID
+trans_id <- coffee_clean %>% 
+            select(relweek, day, house, shop_desc_clean) %>% 
+              distinct() %>% 
+              mutate(transaction_id = row_number())
+
+# Add back to data
 coffee_clean <- coffee_clean %>% left_join(trans_id)
 
+# Find unique brands for each transaction
+brands_per_id_light <- coffee_clean %>% 
+                        filter(cust_type == "light") %>% 
+                        select(transaction_id, brand_clean) %>% 
+                        distinct()
 
-brands_per_id <- coffee_clean %>% 
-                  select(transaction_id, brand_clean) %>% 
-                  distinct() %>% 
-                  mutate(quant = 1,
-                         transaction_id = as.character(transaction_id))
+brands_per_id_heavy <- coffee_clean %>% 
+                        filter(cust_type == "heavy") %>% 
+                        select(transaction_id, brand_clean) %>% 
+                        distinct()
 
-                  group_by(transaction_id) %>% 
-                  summarise(brands = paste(brand_clean, collapse = ", ")) %>% 
-                  mutate(quant = 1)
+# Step 2 - reshape to co-occurence ---------------------------------------------
+# Get co-occurenc matrix (may be inefficient on large data)
+cooccurence_light <- brands_per_id_light %>% table() %>% crossprod()
+cooccurence_heavy <- brands_per_id_heavy %>% table() %>% crossprod()
 
-colocs <- brands_per_id %>% 
-          group_by(brands) %>% 
-          tally() %>% 
-          filter(grepl(",", brands) == TRUE)
-
-colocs_wide <- colocs %>% 
-                separate(brands, 
-                         into = c("brand1", "brand2", "brand3", "brand4"), ",")
-
-colocs_mat <- matrix(nrow = 6, ncol = 6)
-colnames(colocs_mat) <- colnames(heavy_elasticities_clean)
-rownames(colocs_mat) <- rownames(heavy_elasticities_clean)
+# Set diagonal to 0
+diag(cooccurence_light) <- 0
+diag(cooccurence_heavy) <- 0
 
 
-library(reshape2)  
-dat2 <- melt(brands_per_id)
-w <- dcast(dat2, brand_clean ~ transaction_id)
-x <- as.matrix(w[,-1])
-x[is.na(x)] <- 0
-x <- apply(x, 2,  function(x) as.numeric(x > 0))  #recode as 0/1
-v <- x %*% t(x)                                   #the magic matrix 
-diag(v) <- 0                                      #repalce diagonal
-dimnames(v) <- list(w[, 1], w[,1])                #name the dimensions
-v
+
+
+

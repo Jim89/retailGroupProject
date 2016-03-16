@@ -56,6 +56,7 @@ theme <- theme(legend.position = "bottom",
 source("./r/files/801_clout_and_vuln_map.R")
 source("./r/files/802_variable_importance_plot.R")
 source("./r/files/803_buying_behaviour_charts.R")
+source("./r/files/804_brands_purchased_plot.R")
 
 
 # Step 3 - write plots to file -------------------------------------------------
@@ -77,4 +78,7 @@ bbplots <- ls()[grep("bb_", ls())]
 res <- lapply(bbplots, function(x) ggsave(paste0("./visualisations/", x,".svg"),
                                    eval(parse(text = x))))
 rm(res)
+
+# Save prop brands purchased plot
+ggsave("./visualisations/brands_purchased.svg", brands_purchase_plot)
 

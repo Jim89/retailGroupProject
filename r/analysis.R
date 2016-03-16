@@ -12,17 +12,21 @@ source("./r/functions/toproper.R")
 
 
 # Step 2 - run scripts in order ------------------------------------------------
-# Run Analysis code
-source("./r/files/00_clean_and_filter.R")
-source("./r/files/01_light_vs_heavy.R")
-source("./r/files/02_clean_brands.R")
-source("./r/files/03_prepare_for_modelling.R")
-source("./r/files/04_heavy_elast.R")
-source("./r/files/05_light_elast.R")
-source("./r/files/06_clout_and_vuln_stats.R")
-source("./r/files/07_write_elasticity_results_to_file.R")
-source("./r/files/08_buying_behaviour_data.R")
-source("./r/files/09_buying_behaviour_classify.R")
+# Data clean and preparation
+source("./r/files/000_clean_and_filter.R")
+source("./r/files/001_light_vs_heavy.R")
+source("./r/files/002_clean_brands.R")
+source("./r/files/003_prepare_for_modelling.R")
+
+# Elasticity modelling
+source("./r/files/101_heavy_elast.R")
+source("./r/files/102_light_elast.R")
+source("./r/files/103_clout_and_vuln_stats.R")
+source("./r/files/104_write_elasticity_results_to_file.R")
+
+# Buying behaviour modelling
+source("./r/files/201_buying_behaviour_data.R")
+source("./r/files/202_buying_behaviour_classify.R")
 
 
 # Step 3 - run visualisation scripts in order ----------------------------------
@@ -43,10 +47,10 @@ theme <- theme(legend.position = "bottom",
                panel.background = element_rect(fill = "white", colour = "lightgrey"),
                panel.border = element_rect(colour = "black", fill = NA))
 
-# Run plotting code
-source("./r/files/10_clout_and_vuln_map.R")
-source("./r/files/11_variable_importance_plot.R")
-source("./r/files/12_buying_behaviour_charts.R")
+# Custom visualisations (create plot objects)
+source("./r/files/801_clout_and_vuln_map.R")
+source("./r/files/802_variable_importance_plot.R")
+source("./r/files/803_buying_behaviour_charts.R")
 
 
 # Step 3 - write plots to file -------------------------------------------------

@@ -1,0 +1,2 @@
+ADJUSTMENTS
+used absolute value of items sold on promotion instead of proportion

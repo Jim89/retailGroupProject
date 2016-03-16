@@ -11,7 +11,7 @@ source("./r/functions/normalise.R")
 source("./r/functions/toproper.R")
 
 
-# Step 2 - run scripts in order ------------------------------------------------
+# Step 2 - run build cripts in order -------------------------------------------
 # Data clean and preparation
 source("./r/files/000_clean_and_filter.R")
 source("./r/files/001_light_vs_heavy.R")
@@ -27,6 +27,11 @@ source("./r/files/104_write_elasticity_results_to_file.R")
 # Buying behaviour modelling
 source("./r/files/201_buying_behaviour_data.R")
 source("./r/files/202_buying_behaviour_classify.R")
+
+# Co-occurence and switching matrices
+source("./r/files/401_cooccurence_matrices.R")
+source("./r/files/402_switching_matrices.R")
+
 
 
 # Step 3 - run visualisation scripts in order ----------------------------------
@@ -72,3 +77,4 @@ bbplots <- ls()[grep("bb_", ls())]
 res <- lapply(bbplots, function(x) ggsave(paste0("./visualisations/", x,".svg"),
                                    eval(parse(text = x))))
 rm(res)
+

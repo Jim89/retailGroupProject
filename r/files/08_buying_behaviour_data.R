@@ -13,11 +13,17 @@ house_summary <- coffee_clean %>%
             total_vol = sum(volume)) %>% 
   ungroup() %>% 
   group_by(house) %>% 
-  summarise(avg_weekly_visits = mean(records),
-            avg_weekly_packs = mean(total_packs),
+  summarise(avg_weekly_packs = mean(total_packs),
             avg_weekly_spend = mean(total_spend),
             avg_weekly_vol = mean(total_vol)) 
 
+avg_weekly_visits <- coffee_clean %>% 
+                      select(relweek, house, transaction_id) %>% 
+                      distinct() %>% 
+                      group_by(relweek, house) %>% 
+                      summarise(visits = n()) %>% 
+                      group_by(house) %>% 
+                      summarise(avg_weekly_visits = mean(visits))
 
 distinct_shops <- coffee_clean %>% 
   group_by(house, shop_desc_clean) %>% 
@@ -55,6 +61,7 @@ buying_behaviour <- house_summary %>%
           left_join(distinct_brands) %>% 
           left_join(spend_stats) %>% 
           left_join(promo_stats) %>% 
+          left_join(avg_weekly_visits) %>% 
           mutate(cust_type = ifelse(avg_weekly_vol <= quartiles[2], "Light",
                                     ifelse(avg_weekly_vol >= quartiles[4], "Heavy", 
                                            "medium"))) %>% 

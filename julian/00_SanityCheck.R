@@ -44,10 +44,9 @@ count_repeat <- function(data)
   l <- duplicated(repeated)
   count <- c()
   n <- 1
-  error <- 0
   for (i in 1:(length(l))){
     if(i < length(l)){
-      if (l[i] == l[i + 1] & l[i] == TRUE) {n <- n+1}
+      if (l[i] == l[i + 1] & l[i] == TRUE) {n <- n + 1}
       else if (l[i] != l[i + 1] & l[i] == TRUE){
         n <- n + 1
         count <- c(count, n)
@@ -61,10 +60,15 @@ count_repeat <- function(data)
   result <- cbind(unique_repeated, count)
   return (result)
 }
+# There are repeated/identical rows for < 15000 households. Assumption: These are due to the fact that each row/observation
+# represents only 1 pack and the repeated rows indicates that a household bought several packs in "one go"
+# (this is probably sensible for most observations but not all - also, why were there 2 and 3 packs in the original/unfiltered
+# data set?)
 
 # Call function to create data frame including the number of 'repeats'
-ordered_coffee <- coffee[order(coffee$HOUSE, coffee$NETSPEND), ]
+ordered_coffee <- coffee[order(coffee$HOUSE, coffee$NETSPEND, coffee$DAY, coffee$Volume), ]
 repeated_rows <- count_repeat(ordered_coffee)
+# Many repeated identical rows
 
 # Compute frequencies of households
 frequencies <- as.data.frame(table(coffee$HOUSE))
@@ -90,4 +94,6 @@ for (r in 1:(nrow(unique_coffee) - 1)){
   }
 }
 anomalies <- unique(df)
-nrow(anomalies) # 1347 anomalies 
+nrow(anomalies) 
+# 1347 anomalies, Explanation: Either explained by specific promotion type or small discrepancies which are economically insignificant
+# In particular when considering the total size of the data set

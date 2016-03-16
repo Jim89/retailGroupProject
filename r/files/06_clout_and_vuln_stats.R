@@ -3,6 +3,7 @@
 # column values, ignoring diagonal)
 compute_clouts <- function(elasticities) {
   diag(elasticities) <- 0
+  elasticities[elasticities < 0] <- 0
   clouts <- colSums(elasticities)
   return(clouts)
 }
@@ -11,6 +12,7 @@ compute_clouts <- function(elasticities) {
 # row values, ignoring diagonal)
 compute_vulns <- function(elasticities) {
   diag(elasticities) <- 0
+  elasticities[elasticities < 0] <- 0
   vulns <- rowSums(elasticities)
   return(vulns)
 }  

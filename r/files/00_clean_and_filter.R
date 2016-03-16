@@ -33,6 +33,18 @@ coffee_clean <- coffee %>% # Take coffee data then
                                             !grepl("No Promotion", epromdesc), 1, 0),
                        # Add price field
                        price = netspend/packs)
+
+# Step 3 - create ID -----------------------------------------------------------
+# Create transaction ID
+trans_id <- coffee_clean %>% 
+  select(relweek, day, house, shop_desc_clean) %>% 
+  distinct() %>% 
+  mutate(transaction_id = row_number())
+
+# Add back to data
+coffee_clean <- coffee_clean %>% left_join(trans_id)
+
+# Step 4 - clean up ------------------------------------------------------------
 rm(coffee)
 gc(verbose = FALSE)
 

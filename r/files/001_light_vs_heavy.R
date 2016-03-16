@@ -4,20 +4,10 @@
 # Step 1 - aggregate data ------------------------------------------------------
 house_summary <- coffee_clean %>% 
                 group_by(relweek, house) %>% 
-                summarise(records = n(),
-                          total_packs = sum(packs),
-                          avg_packs = mean(packs),
-                          sd_packs = sd(packs),
-                          total_spend = sum(netspend),
-                          avg_spend = mean(netspend),
-                          sd_spend = sd(netspend),
-                          total_vol = sum(volume)) %>% 
+                summarise(total_vol = sum(volume)) %>% 
                 ungroup() %>% 
                 group_by(house) %>% 
-                summarise(avg_weekly_visits = mean(records),
-                          avg_weekly_packs = mean(total_packs),
-                          avg_weekly_spend = mean(total_spend),
-                          avg_weekly_vol = mean(total_vol)) 
+                summarise(avg_weekly_vol = mean(total_vol)) 
 
 # Step 2 - classify into light vs heavy ----------------------------------------
 quartiles <- quantile(house_summary$avg_weekly_vol)

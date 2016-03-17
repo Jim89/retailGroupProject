@@ -8,9 +8,27 @@ output:
     fig_caption: yes
 ---
 
-```{r source, echo = FALSE, message = FALSE, warning = FALSE, cache = TRUE}
+```{r source, echo = FALSE, message = FALSE, warning = FALSE, cache = FALSE}
 source("./r/00_analysis.R")
 library(knitr)
+library(dplyr)
+
+# Set up custom theme to be applied to all plot objects
+theme <- theme(legend.position = "bottom",
+               axis.text.y = element_text(size = 16, colour = "black"),
+               axis.text.x = element_text(size = 16, colour = "black"),
+               legend.text = element_text(size = 16),
+               legend.title = element_text(size = 16),
+               title = element_text(size = 16),
+               strip.text = element_text(size = 16, colour = "black"),
+               strip.background = element_rect(fill = "white"),
+               panel.grid.minor.x = element_blank(),
+               panel.grid.major.x = element_line(colour = "grey", linetype = "dotted"),
+               panel.grid.minor.y = element_line(colour = "lightgrey", linetype = "dotted"),
+               panel.grid.major.y = element_line(colour = "grey", linetype = "dotted"),
+               panel.margin.y = unit(0.1, units = "in"),
+               panel.background = element_rect(fill = "white", colour = "lightgrey"),
+               panel.border = element_rect(colour = "black", fill = NA))
 ```
 
 # Introduction
@@ -143,29 +161,68 @@ light_elasticities_clean %>%
 
 ## Clout and vulnerability statistics
 
-### Heavy
-
-### Light
+```{r clout, echo = FALSE}
+clout_and_vuln_stats %>% 
+  mutate(cust = toproper(cust),
+         brand = toproper(brand),
+         clout = round(clout, 3),
+         vuln = round(vuln, 3)) %>% 
+  setNames(c("User", "Brand", "Clout", "Vulnerability")) %>% 
+  kable(caption = "Clout and vulnerability statistics for each customer type and brand. Note that negative cross-price elasticities were not included in these calculations as they are believed to erroneous values introduced due via aggregation.")
+```
 
 ## Co-occurence matrices
 
-### Heavy
+```{r cooc_heavy, echo = FALSE}
+cooccurence_heavy %>% 
+  kable(caption = "Brand co-occurence matrix for heavy users")
+```
 
-### Light
+```{r cooc_light, echo = FALSE}
+cooccurence_light %>% 
+  kable(caption = "Brand co-occurence matrix for light users")
+```
 
 ## Switching matrices
 
-### Heavy
+```{r switch_heavy, echo = FALSE}
+heavy_switch %>% 
+  kable(caption = "Switching matrix for heavy users")
+```
 
-### Light
+```{r switch_light, echo = FALSE}
+light_switch %>% 
+  kable(caption = "Switching matrix for light users")
+```
 
 ## Buying behaviour differences
 
+```{r k_conf_mat, echo = FALSE}
+rownames(conf_mat) <- c("Cluster one", "Cluster two")
+conf_mat %>% 
+  kable(caption = "Confusion matrix for k-Means clusters against existing user labels")
+```
+
+
+```{r rf_conf_mat, echo = FALSE}
+mat <- rf$confusion
+colnames(mat) <- c("Heavy", "Light", "Error")
+mat %>%   
+  kable(caption = "Confusion matrix for random forest classification against existing user labels")
+```
+
 *** 
+
+\pagebreak
 
 # Appendices
 
 ## Appendix one - Clout and vulnerability map
+
+```{r clout_map, echo = FALSE, fig.cap="Clout and vulnerabilty maps for heavy and light users. Note that negative cross-price elasticities were not included in these calculations as they are believed to erroneous values introduced due via aggregation.", fig.height=4, fig.width=5}
+source("./r/files/801_clout_and_vuln_map.R")
+clout_and_vuln_map
+```
 
 ## Appendix two - Buying behaviour variable importance
 

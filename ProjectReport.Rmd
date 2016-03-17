@@ -1,14 +1,15 @@
 ---
 title: "Retail Analytics Group Report"
 author: Philipp Dufter, Jessica Zhou, Joachim Ernst, Julian Hohlweg, Maria Engesaeth,
-  Jim Leach
+  Jim Leach, Tina Buturishvili
 date: "17 March 2016"
-output: 
+output:
   pdf_document:
     fig_caption: yes
+  word_document: default
 ---
 
-```{r source, echo = FALSE, message = FALSE, warning = FALSE, cache = FALSE}
+```{r source, echo = FALSE, message = FALSE, warning = FALSE}
 source("./r/00_analysis.R")
 library(knitr)
 library(dplyr)
@@ -33,33 +34,27 @@ theme <- theme(legend.position = "bottom",
 
 # Introduction
 
-In this assignment we were provided with data from _Katar Worldpanel_ covering sales of coffee over a year at several major UK retailers. We were posed a research question and asked to use the data to develop a response to that question. The research question that we were asked was:
+We were provided with data from _Katar Worldpanel_ covering sales of coffee over a year at several major UK retailers. We were asked to use the data to develop a response to the question: 
 
 > "Do heavy versus light users in the category have differences in price elasticities and differences in buying behaviour (e.g. buy different brands, buy different proportion of products on discount)?
 
-We have investigated multiple potential methods to answer this question. This report presents our the final results of our analysis. Whilst the data are confidential, our full approach including both intermediate and final analytical code/methods is packaged with this report, and can also be found on our online repository [here](https://github.com/Jim89/retailGroupProject).
-
-## This document
-
-This document is broken down in to two main sections: our approach; and our results with some discussion. Each section is further split in to subsections covering individual elements of the assignment. In the appendices we present additional visualisations that are relevant to our work.
+This report presents our response to this question. Whilst the data are confidential, our approach including both intermediate and final analytical code/results is packaged with this report, and can also be found on our online repository [here](https://github.com/Jim89/retailGroupProject).
 
 ## Executive summary
 
-TODO
+We have found that differences exist between heavy and light users in the category. We measured price elasticity using regression methods and found heavy users to be typically more sensitive to price than light users. We used machine learning approaches to understand differences in buying behaviours between the two groups and were able to successfuly show that there are differences in a number of behaviours. 
 
-*** 
+\pagebreak
 
 # Section One: Approach
 
-In this section we set out the individual steps of our analytical approach.
-
 ## Filtering and cleaning the data
 
-The first step in our approach was to filter the data. The raw data contained data and a large number of shops and types of coffee. In line with the assignment instructions we filtered the data to include only data from the following retailers: Tesco, Asda, Sainsburys, Morrisons, Aldi, and Lidl. Aldi and Lidle were merged in to a single "Aldi & Lidl" retailer. Additionally, we selected only records that covered the following types of coffee: granules, freeze dried, and micro ground.
+In line with the assignment instructions we filtered the data to include only data from the following retailers: Tesco, Asda, Sainsburys, Morrisons, Aldi, and Lidl. We selected only records that covered the following types of coffee: granules, freeze dried, and micro ground.
 
-We also derived new fields from the data. Using information on promotional sales we defined a field indicating if the sale was a price-promoted sale (e.g. money off a product). We derived a second, similar field which indicated if the sale was a unit-promoted sale (e.g. X product for £Y). We calculated the price of each product using the approach outlined in the data-dictionary (i.e. $price = netspend/packs$).
+Using information on promotions we defined a field indicating if the sale was a price-promoted sale (TPR). We derived a second, similar field which indicated if the sale was a unit-promoted sale (e.g. X product for £Y). We calculated the price of each product using the approach outlined in the data-dictionary ($price = netspend/packs$).
 
-We also grouped and cleaned the brand name of each purhcase. Any individual brand that had made fewer than five thousand sales was labelled as an "_Other brand_". All supermarket own-brand goods were labelled as "_supermarket own_", and all _Nescafe_ products were grouped together under the _Nescafe_ brand. This reduced the number of brands from over thirty to six distinct brands:
+We grouped and cleaned the brand names. Any brands with fewer than five thousand sales was labelled as "_Other brand_". All supermarket own-brands were labelled as "_supermarket own_", and all _Nescafe_ products were grouped together. This left us with six distinct brands:
 
 * Carte Noire;
 * Kenco;
@@ -68,110 +63,136 @@ We also grouped and cleaned the brand name of each purhcase. Any individual bran
 * Supermarket own; and
 * Other.
 
-Finally, we created an ID for each unique combination of week, day, house and shop name (i.e. for each individual visit to a shop a house made).
+Finally, we created a "visit ID" for each unique combination of week, day, house and shop name.
 
 ## Defining heavy and light
 
-In order to separate "heavy" from "light" users in the category we calculated, for each household in the data, the average weekly volume of coffee that they had purchased. Houses that were below the twenty-fifth percentile of average weekly volume were classified as "light" users in the category. Houses that were above the seventy-fifth percentile of average weekly volume were classified as "heavy" users. Those houses that fell between the twenty-fifth and seventy-fifth percentile were classified as "medium" users and were excluded from the remaining analysis.
+In order to separate "heavy" from "light" users in the category we calculated for each household the average volume of coffee purchased on each shopping visit. Houses below the twenty-fifth percentile were classified as "light" users. Houses above the seventy-fifth percentile were classified as "heavy" users. Houses that fell between the twenty-fifth and seventy-fifth percentile were classified as "medium" users and were excluded from the analysis.
 
 ## Data validation and preparation
 
-After filtering and cleaning the data, we performed some "sanity" checks on the data for completeness. In doing so we checked for:
+We also performed validation checks on the data for completeness, looking for:
 
 * missing data values;
 * unexpected 0 values;
 * duplicate rows; and
 * quasi-duplicate rows.
 
-An overview of the results from this exercise are presented in section two.
+We found no missing values in the data and any 0 values were determined to be legitimate after more investigation. We found duplicate rows in the data. We assumed that duplicates refer to purchases of several packs in scope on the same shop visit.
 
-In order to prepare the data from elasticity calculations we aggregated the data to a weekly level. For each of the six brands we defined previously, we calculated:
+We identified potentially erroneous `NETSPEND` values. We found observations for which all columns except `NETSPEND` were identical. This was partly explained by the type of promotion (e.g. 3F2). However, some values could not be explained. However, any such errors were economically insignificant. Given the total size of the data, these observations do not meaningfully influence the analysis. As such, we took no action to adjust or correct these values.
 
-* the total number of sales in each week;
-* the average price paid for that brand in each week;
+We aggregated the data to a weekly level in order to prepare them for elasticity calculations. For each of the brands defined previously, we calculated:
+
+* the total number of sales;
+* the average price paid;
 * the proportion of total sales that were made on a price-based promotion; and
 * the proportion of total sales that were made on a units-based promotion.
 
-We also investigated the use of a brand's market share in each week and the use of total sales across all brands in each week, but these were not found to be useful and so were removed from the final model. 
+We investigated the use of a brand's market share in each week and the use of total sales across all brands in each week. These were not found to be useful and so were removed from the final model. 
 
 ## Price elasticity functional form selection
 
-Price elasticities can be estimated using a variety of model functional forms. As such, we applied a process of model selection to find the best model for both the light and heavy users. 
-
-We developed models in each potential functional form (level-level, semi-log and log-log) for each brand and each customer type (i.e. one model per brand, customer type and functional form). We used five-fold cross validation to estimate the out-of-sample error for each brand (using mean-squared error as the metric) and averaged this error across the six brands to give a single out-of-sample error estimate for each functional form. 
-
-We used the results of this process to inform our choice of functional form for each customer type. It was found that the best functional form for heavy users was semi-log, whereas it was the level-level form for the light users.
+We developed models for each functional form (level-level, semi-log and log-log) for each brand and each customer type (i.e. one model per brand, customer type and functional form). We used five-fold cross validation to estimate the out-of-sample error (using mean-squared error) and averaged this error across the six brands to give a single error estimate for each functional form per customer type. It was found that the best functional form for heavy users was semi-log, whereas it was the level-level form for the light users.
 
 ## Price elasticity model implementation
 
-Having found the best functional form for each customer type, we then developed our final models. For each of the heavy and light users, we implemented stepwise regression to find the best set of features for each brand. 
+For each of customer type, we implemented stepwise regression to find the best model for each brand. We obtained the relevant coefficients from each brand's model and performed the appropriate transformations to generate elasticity values. 
 
-We obtained the relevant coefficients from each brand's model and performed the appropriate transformations (i.e. for the level-level and semi-log models). This enabled us to develop our elasticity matrices for light users and heavy users. We also obtained the significance values for each elasticity value and set to zero any elasticities that were not found to be statistically significant ($p \geq 0.05$).
-
-## Co-occurence and switching matrices
-
-We also developed co-occurence matrices for both light and heavy users. These show which of the six brands we developed were purchased together (i.e. in the same trip). To complement this we also developed switching matrices for both light and heavy users. The switching matrices were calcualted at a house level (i.e. house 1 bought product A then B, then A etc). Together these matrices provided a way to find groups of products which are similar for either light or heavy users.
+We transformed the values into elasticity matrices for light and heavy users. We also obtained the $p$-value for each coefficient, setting to zero any elasticities that were not statistically significant ($p \geq 0.05$).
 
 ## Buying behaviours
 
-In order to assess differences between light and heavy users we defined a range of buying behaviours. For each house in the data, we calculated:
+In order to assess differences between light and heavy users we defined a range of buying behaviours. For each house we calculated:
 
-* the average weekly spend (£);
-* the average weekly packs purchased;
-* the average weekly shopping trips;
-* the distinct number of the individual retailers they had visited;
-* the distinct number of brands which they had purchased;
-* the maximum amount they spent on any single trip;
-* the minium amount they spent on any single trip;
-* the proportion of all their purchases which were on price promotion; and
-* the proportion of all their purchases which were on unit-based promotion.
+* the average spend (£) per visit;
+* the average packs purchased per visit;
+* the average weekly visits;
+* the distinct number of individual retailers visited;
+* the distinct number of brands purchased;
+* the maximum amount spent on any single trip;
+* the minimum amount spent on any single trip;
+* the proportion of all purchases on price promotion; and
+* the proportion of all purchases on unit-based promotion.
 
-We combined each of these measures in to a single data set keyed by house.
+These measures were combined in to a single data set keyed by house.
 
 ## Buying behaviour differences
 
-We applied two different methods to the data outlined above in order to assess if there were differences between heavy and light users. 
+We applied $k$-means clustering to split the data in to two clusters. We then compared how the clusters found by the algorithm matched with our pre-defined label of "heavy" or "light" for each user. 
 
-The first method was $k$-means clustering for which we attempted to split the data in to two clusters. We then compared how the clusters found by the algorithm matched with our pre-defined label of "heavy" or "light" for each user. 
-
-Secondly, we treated the problem as one of binary classification and applied a random forest algorithm in order to determine if they could be used to classify users as light or heavy. Having trained the model, we were able to extract importance measures from the model for each variable, to determine which buying behaviours had the greatest impact in classifying users as light or heavy.
+Secondly, treating the problem as a binary classification, we applied a random forest algorithm to determine if the data could be used to classify users as light or heavy. Having trained the model, we were able to extract importance measures from the model for each variable. This determined which buying behaviours had the greatest impact in classifying users as light or heavy, i.e. which buying behaviours were the most different between the two groups.
 
 Finally, we performed statistical analyses of differences in buying behaviours between the two user types.
 
-*** 
+\pagebreak
 
 # Section Two: Results and discussion
 
-## Elasticity matrices
+## Price elasticity matrices
 
 ```{r heavy_elast, echo = FALSE}
 colnames(heavy_elasticities_clean) <- colnames(heavy_elasticities_clean) %>% toproper()
 rownames(heavy_elasticities_clean) <- rownames(heavy_elasticities_clean) %>% toproper()
 heavy_elasticities_clean %>% 
-  kable(caption = "Elasticity matrix for heavy users")
+  kable(caption = "Price elasticity matrix for heavy users")
 ```
-
 
 ```{r light_elast, echo = FALSE}
 colnames(light_elasticities_clean) <- colnames(light_elasticities_clean) %>% toproper()
 rownames(light_elasticities_clean) <- rownames(light_elasticities_clean) %>% toproper()
 light_elasticities_clean %>% 
-  kable(caption = "Elasticity matrix for light users")
+  kable(caption = "Price elasticity matrix for light users")
 ```
+
+Heavy users have an average own-price elasticity of `r round(heavy_elasticities_clean %>% diag() %>% mean(), 3)` compared with `r round(light_elasticities_clean %>% diag() %>% mean(), 3)` for light users (tables one and two). Moreover there are more 0 (i.e. insignificant) elasticities for light users (`r sum(light_elasticities_clean ==0)`) than for heavy (`r sum(heavy_elasticities_clean == 0)`). This shows that heavy users are more price sensitve than light users. 
+
+Whilst the differences in own-price elasticity are not statistically significant ($p$-value `r round(t.test(heavy_elasticities_clean %>% diag(), light_elasticities_clean %>% diag())$p.value, 3)`), from a practical perspective the results may still be of interest to a manager in the retail setting. 
+
+We note the presence of some negative cross-price elasticities. These are unusual so we examined the co-occurence matrices (appendix one) for products with negative cross-price elasticities in order investigate if they were potentially complementary products. It appears that they are not, and such values are therefore likely to have been produced as a result of aggregating the data to a weekly level. When calculating clout and vulnerability, we have ignored these erroneous values.
 
 ## Clout and vulnerability statistics
 
-```{r clout, echo = FALSE}
-clout_and_vuln_stats %>% 
-  mutate(cust = toproper(cust),
-         brand = toproper(brand),
-         clout = round(clout, 3),
-         vuln = round(vuln, 3)) %>% 
-  setNames(c("User", "Brand", "Clout", "Vulnerability")) %>% 
-  kable(caption = "Clout and vulnerability statistics for each customer type and brand. Note that negative cross-price elasticities were not included in these calculations as they are believed to erroneous values introduced due via aggregation.")
+```{r clout_map, echo = FALSE, fig.cap="Clout and vulnerabilty maps for heavy and light users. Note that negative cross-price elasticities were not included in these calculations as they are believed to erroneous values introduced due via aggregation.", fig.height=4, fig.width=6}
+source("./r/files/801_clout_and_vuln_map.R")
+clout_and_vuln_map
 ```
 
-## Co-occurence matrices
+There are a few key differences in the clout and vulnerability between the two groups. Firstly supermarket-branded coffees have a large clout for heavy users compared to light. We concluded that as it gets more expensive, heavy purchasers of supermarket coffee are more likely to switch to premium brands at comparable price points.
+
+Secondly, Kenco coffee has a high vulnerability for heavy users relative to light users. This drop in vulnerability is interesting, indicating for that heavy users, Kenco is at a greater risk of losing market share to its competitors than for light users. 
+
+Thirdly, Nescafe has a reasonably high clout _and_ vulnerability for heavy users, and very small values for light users.  Nescafe is the most popular brand for heavy users (see appendix 3) and so it makes sense that it has both a high clout and vulnerability given heavy users price sensitivity. However light users appear to prefer supermarket own-brand goods (appendix 3) and are less price sensitive; so Nescafe is neither greatly effected by, or has much effect on, other brands. 
+
+## Buying behaviour differences
+
+The results from both our $k$-means and random forest implementations showed that buying behaviour can be used to distinguish between heavy and light users. This means that there _are_ differences betweent the two groups. Appendix two shows the confusion matrices found via each of these algorithms. $k$-means was able to distinguish between heavy and light users with `r round(sum(diag(conf_mat))/sum(conf_mat)*100, 1)`% accuracy compared to the labels we defined. Random forest had an accuracy of `r round((1-mean(rf$err.rate[,1]))*100, 1)`% compared to the true labels.
+
+The variable importance plot from the random forest algorithm is seen in figure two. It shows that features such as the average number of packs purchased per visit and the proportion of all purchases made on price promotion are the most important when determining light and heavy users, meaning that they have the greatest differences between the two groups.
+
+```{r var_imp, echo = FALSE, fig.cap="Variable importance for classifying users in to light versus heavy via random forest algorithm.", fig.height=3.5, fig.width=6}
+source("./r/files/802_variable_importance_plot.R")
+var_imp(rf)
+```
+
+Such differences can be readily observed in figures three and four. Figure three shows that heavy users bought a higher proportion of products on price promotion relative to light users, where the majority of users made no price-promotional purchases. Figure four shows that light users typically only purchase an average of one pack per visit, whereas heavy users buy a greater number of packs at once. 
+
+```{r bb_promo_price, echo = FALSE, fig.cap = "Differences in proportion of price-promoted sales for light and heavy users", fig.height = 3.5, fig.width=6, warning=FALSE}
+source("./r/files/803_buying_behaviour_charts.R")
+bb_prop_promo_price
+```
+
+```{r bb_max_spend, echo = FALSE, fig.cap = "Differences in maximum single-trip spend for light and heavy users", fig.height=3.5, fig.width=6, warning=FALSE}
+bb_avg_weekly_packs
+```
+
+We also note that the differences in buying behaviours between heavy and light users were typically statistically significant (appendix four).  
+
+\pagebreak
+
+# Appendices
+
+## Appendix one - Co-occurence matrices
 
 ```{r cooc_heavy, echo = FALSE}
 cooccurence_heavy %>% 
@@ -183,26 +204,15 @@ cooccurence_light %>%
   kable(caption = "Brand co-occurence matrix for light users")
 ```
 
-## Switching matrices
+\pagebreak
 
-```{r switch_heavy, echo = FALSE}
-heavy_switch %>% 
-  kable(caption = "Switching matrix for heavy users")
-```
-
-```{r switch_light, echo = FALSE}
-light_switch %>% 
-  kable(caption = "Switching matrix for light users")
-```
-
-## Buying behaviour differences
+## Appendix two - $k$-means and random forest confusion matrices
 
 ```{r k_conf_mat, echo = FALSE}
 rownames(conf_mat) <- c("Cluster one", "Cluster two")
 conf_mat %>% 
   kable(caption = "Confusion matrix for k-Means clusters against existing user labels")
 ```
-
 
 ```{r rf_conf_mat, echo = FALSE}
 mat <- rf$confusion
@@ -211,21 +221,17 @@ mat %>%
   kable(caption = "Confusion matrix for random forest classification against existing user labels")
 ```
 
-*** 
+\pagebreak
+
+## Appendix three - Brand proportion of purhcases differences
+
+```{r prob_brands, echo = FALSE, fig.cap = "", fig.height = 3.5, fig.width=6, warning=FALSE}
+source("./r/files/804_brands_purchased_plot.R")
+brands_purchase_plot
+```
 
 \pagebreak
 
-# Appendices
+## Appendix four - Brand behaviour statistical differences
 
-## Appendix one - Clout and vulnerability map
-
-```{r clout_map, echo = FALSE, fig.cap="Clout and vulnerabilty maps for heavy and light users. Note that negative cross-price elasticities were not included in these calculations as they are believed to erroneous values introduced due via aggregation.", fig.height=4, fig.width=5}
-source("./r/files/801_clout_and_vuln_map.R")
-clout_and_vuln_map
-```
-
-## Appendix two - Buying behaviour variable importance
-
-## Appendix three - Buying behaviour characteristic differences
-
-## Appendix four - Exploratory plots
+TODO

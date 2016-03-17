@@ -1,21 +1,31 @@
 # Step 0 - prepare environment -------------------------------------------------
 # Function to visualise a field in the buying behaviour data split by light vs heavy 
-dist_split <- function(data, field, bins) {
-  data %>% 
-    ggplot(aes_string(x = field)) +
-    geom_histogram(aes(fill = cust_type), colour = "white", binwidth = bins) +
-    scale_fill_brewer(type = "qual", palette = "Dark2") + 
-    guides(fill = guide_legend(title = "Customer Type")) +
-    facet_grid(. ~ cust_type) +
-    ylab("Count") 
+dist_split <- function(data, field, bins = 30, type = "histogram") {
+  if (type == "histogram") {
+    data %>% 
+      ggplot(aes_string(x = field)) +
+      geom_histogram(aes(fill = cust_type), colour = "white", binwidth = bins) +
+      scale_fill_brewer(type = "qual", palette = "Dark2") + 
+      guides(fill = guide_legend(title = "Customer Type")) +
+      facet_grid(. ~ cust_type) +
+      ylab("Count") 
+  } else if (type == "violin") {
+    data %>% 
+      ggplot(aes_string(x = "cust_type", y = field)) +
+      geom_violin(aes(fill = cust_type), colour = "white") +
+      scale_fill_brewer(type = "qual", palette = "Dark2") + 
+      guides(fill = guide_legend(title = "Customer Type"))
+      # facet_grid(. ~ cust_type) +
+      
+  }
 }
 
 # Step 1 - create the plots ----------------------------------------------------
 # Split plot by prop promo price
-bb_prop_promo_price <- dist_split(buying_behaviour, "prop_promo_price", .05) + 
-                        xlab("Proportion of goods bought on price promotion") +
-                        theme +
-                        theme(strip.text = element_blank()) 
+bb_prop_promo_price <- dist_split(buying_behaviour, "prop_promo_price", type = "violin") +
+                        ylab("Proportion sales on unit promotion") +
+                        xlab("") +
+                        theme
 
 
 # Split plot by max spend

@@ -96,4 +96,4 @@ for (r in 1:(nrow(unique_coffee) - 1)){
 anomalies <- unique(df)
 nrow(anomalies) 
 # 1347 anomalies, Explanation: Either explained by specific promotion type or small discrepancies which are economically insignificant
-# In particular when considering the total size of the data set
+# in particular when considering the total size of the data set

@@ -21,13 +21,22 @@ bb_prop_promo_price <- dist_split(buying_behaviour, "prop_promo_price", .05) +
 # Split plot by max spend
 bb_max_spend <- dist_split(buying_behaviour, "max_spend", 1) + 
                 xlab("Maximum spend in any single trip (£)") +
+                scale_x_continuous(limits = c(0, 10)) +
                 theme + 
                 theme(strip.text = element_blank())
+
+# Split plot by max spend
+bb_avg_weekly_packs <- dist_split(buying_behaviour, "avg_weekly_packs", 1) + 
+                        xlab("Average packs per visit") +
+                        scale_x_continuous(limits = c(1, 7),
+                                           breaks = seq(1, 7, 1)) +
+                        theme + 
+                        theme(strip.text = element_blank())
 
 
 # Split plot by avg_weekly_spend
 bb_avg_weekly_spend <- dist_split(buying_behaviour, "avg_weekly_spend", 2) + 
-                        xlab("Average weekly spend (£)") +
+                        xlab("Average spend per visit (£)") +
                         theme +
                         theme(strip.text = element_blank())
 

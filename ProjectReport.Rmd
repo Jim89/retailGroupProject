@@ -1,0 +1,174 @@
+---
+title: "Retail Analytics Group Report"
+author: Philipp Dufter, Jessica Zhou, Joachim Ernst, Julian Hohlweg, Maria Engesaeth,
+  Jim Leach
+date: "17 March 2016"
+output: 
+  pdf_document:
+    fig_caption: yes
+---
+
+```{r source, echo = FALSE, message = FALSE, warning = FALSE, cache = TRUE}
+source("./r/00_analysis.R")
+library(knitr)
+```
+
+# Introduction
+
+In this assignment we were provided with data from _Katar Worldpanel_ covering sales of coffee over a year at several major UK retailers. We were posed a research question and asked to use the data to develop a response to that question. The research question that we were asked was:
+
+> "Do heavy versus light users in the category have differences in price elasticities and differences in buying behaviour (e.g. buy different brands, buy different proportion of products on discount)?
+
+We have investigated multiple potential methods to answer this question. This report presents our the final results of our analysis. Whilst the data are confidential, our full approach including both intermediate and final analytical code/methods is packaged with this report, and can also be found on our online repository [here](https://github.com/Jim89/retailGroupProject).
+
+## This document
+
+This document is broken down in to two main sections: our approach; and our results with some discussion. Each section is further split in to subsections covering individual elements of the assignment. In the appendices we present additional visualisations that are relevant to our work.
+
+## Executive summary
+
+TODO
+
+*** 
+
+# Section One: Approach
+
+In this section we set out the individual steps of our analytical approach.
+
+## Filtering and cleaning the data
+
+The first step in our approach was to filter the data. The raw data contained data and a large number of shops and types of coffee. In line with the assignment instructions we filtered the data to include only data from the following retailers: Tesco, Asda, Sainsburys, Morrisons, Aldi, and Lidl. Aldi and Lidle were merged in to a single "Aldi & Lidl" retailer. Additionally, we selected only records that covered the following types of coffee: granules, freeze dried, and micro ground.
+
+We also derived new fields from the data. Using information on promotional sales we defined a field indicating if the sale was a price-promoted sale (e.g. money off a product). We derived a second, similar field which indicated if the sale was a unit-promoted sale (e.g. X product for £Y). We calculated the price of each product using the approach outlined in the data-dictionary (i.e. $price = netspend/packs$).
+
+We also grouped and cleaned the brand name of each purhcase. Any individual brand that had made fewer than five thousand sales was labelled as an "_Other brand_". All supermarket own-brand goods were labelled as "_supermarket own_", and all _Nescafe_ products were grouped together under the _Nescafe_ brand. This reduced the number of brands from over thirty to six distinct brands:
+
+* Carte Noire;
+* Kenco;
+* Douwe Egberts;
+* Nescafe;
+* Supermarket own; and
+* Other.
+
+Finally, we created an ID for each unique combination of week, day, house and shop name (i.e. for each individual visit to a shop a house made).
+
+## Defining heavy and light
+
+In order to separate "heavy" from "light" users in the category we calculated, for each household in the data, the average weekly volume of coffee that they had purchased. Houses that were below the twenty-fifth percentile of average weekly volume were classified as "light" users in the category. Houses that were above the seventy-fifth percentile of average weekly volume were classified as "heavy" users. Those houses that fell between the twenty-fifth and seventy-fifth percentile were classified as "medium" users and were excluded from the remaining analysis.
+
+## Data validation and preparation
+
+After filtering and cleaning the data, we performed some "sanity" checks on the data for completeness. In doing so we checked for:
+
+* missing data values;
+* unexpected 0 values;
+* duplicate rows; and
+* quasi-duplicate rows.
+
+An overview of the results from this exercise are presented in section two.
+
+In order to prepare the data from elasticity calculations we aggregated the data to a weekly level. For each of the six brands we defined previously, we calculated:
+
+* the total number of sales in each week;
+* the average price paid for that brand in each week;
+* the proportion of total sales that were made on a price-based promotion; and
+* the proportion of total sales that were made on a units-based promotion.
+
+We also investigated the use of a brand's market share in each week and the use of total sales across all brands in each week, but these were not found to be useful and so were removed from the final model. 
+
+## Price elasticity functional form selection
+
+Price elasticities can be estimated using a variety of model functional forms. As such, we applied a process of model selection to find the best model for both the light and heavy users. 
+
+We developed models in each potential functional form (level-level, semi-log and log-log) for each brand and each customer type (i.e. one model per brand, customer type and functional form). We used five-fold cross validation to estimate the out-of-sample error for each brand (using mean-squared error as the metric) and averaged this error across the six brands to give a single out-of-sample error estimate for each functional form. 
+
+We used the results of this process to inform our choice of functional form for each customer type. It was found that the best functional form for heavy users was semi-log, whereas it was the level-level form for the light users.
+
+## Price elasticity model implementation
+
+Having found the best functional form for each customer type, we then developed our final models. For each of the heavy and light users, we implemented stepwise regression to find the best set of features for each brand. 
+
+We obtained the relevant coefficients from each brand's model and performed the appropriate transformations (i.e. for the level-level and semi-log models). This enabled us to develop our elasticity matrices for light users and heavy users. We also obtained the significance values for each elasticity value and set to zero any elasticities that were not found to be statistically significant ($p \geq 0.05$).
+
+## Co-occurence and switching matrices
+
+We also developed co-occurence matrices for both light and heavy users. These show which of the six brands we developed were purchased together (i.e. in the same trip). To complement this we also developed switching matrices for both light and heavy users. The switching matrices were calcualted at a house level (i.e. house 1 bought product A then B, then A etc). Together these matrices provided a way to find groups of products which are similar for either light or heavy users.
+
+## Buying behaviours
+
+In order to assess differences between light and heavy users we defined a range of buying behaviours. For each house in the data, we calculated:
+
+* the average weekly spend (£);
+* the average weekly packs purchased;
+* the average weekly shopping trips;
+* the distinct number of the individual retailers they had visited;
+* the distinct number of brands which they had purchased;
+* the maximum amount they spent on any single trip;
+* the minium amount they spent on any single trip;
+* the proportion of all their purchases which were on price promotion; and
+* the proportion of all their purchases which were on unit-based promotion.
+
+We combined each of these measures in to a single data set keyed by house.
+
+## Buying behaviour differences
+
+We applied two different methods to the data outlined above in order to assess if there were differences between heavy and light users. 
+
+The first method was $k$-means clustering for which we attempted to split the data in to two clusters. We then compared how the clusters found by the algorithm matched with our pre-defined label of "heavy" or "light" for each user. 
+
+Secondly, we treated the problem as one of binary classification and applied a random forest algorithm in order to determine if they could be used to classify users as light or heavy. Having trained the model, we were able to extract importance measures from the model for each variable, to determine which buying behaviours had the greatest impact in classifying users as light or heavy.
+
+Finally, we performed statistical analyses of differences in buying behaviours between the two user types.
+
+*** 
+
+# Section Two: Results and discussion
+
+## Elasticity matrices
+
+```{r heavy_elast, echo = FALSE}
+colnames(heavy_elasticities_clean) <- colnames(heavy_elasticities_clean) %>% toproper()
+rownames(heavy_elasticities_clean) <- rownames(heavy_elasticities_clean) %>% toproper()
+heavy_elasticities_clean %>% 
+  kable(caption = "Elasticity matrix for heavy users")
+```
+
+
+```{r light_elast, echo = FALSE}
+colnames(light_elasticities_clean) <- colnames(light_elasticities_clean) %>% toproper()
+rownames(light_elasticities_clean) <- rownames(light_elasticities_clean) %>% toproper()
+light_elasticities_clean %>% 
+  kable(caption = "Elasticity matrix for light users")
+```
+
+## Clout and vulnerability statistics
+
+### Heavy
+
+### Light
+
+## Co-occurence matrices
+
+### Heavy
+
+### Light
+
+## Switching matrices
+
+### Heavy
+
+### Light
+
+## Buying behaviour differences
+
+*** 
+
+# Appendices
+
+## Appendix one - Clout and vulnerability map
+
+## Appendix two - Buying behaviour variable importance
+
+## Appendix three - Buying behaviour characteristic differences
+
+## Appendix four - Exploratory plots

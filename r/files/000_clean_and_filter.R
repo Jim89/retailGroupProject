@@ -45,6 +45,6 @@ trans_id <- coffee_clean %>%
 coffee_clean <- coffee_clean %>% left_join(trans_id)
 
 # Step 4 - clean up ------------------------------------------------------------
-rm(coffee)
+rm(coffee, trans_id)
 gc(verbose = FALSE)
 

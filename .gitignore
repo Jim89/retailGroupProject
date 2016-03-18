@@ -3,3 +3,4 @@ data/InstantCoffee.csv
 data/DataDecoder.xlsx
 .Rproj.user
 *.twb
+.DS_Store

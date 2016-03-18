@@ -123,7 +123,7 @@ We applied $k$-means clustering to split the data in to two clusters. We then co
 
 Secondly, treating the problem as a binary classification, we applied a random forest algorithm to determine if the data could be used to classify users as light or heavy. Having trained the model, we were able to extract importance measures from the model for each variable. This determined which buying behaviours had the greatest impact in classifying users as light or heavy, i.e. which buying behaviours were the most different between the two groups.
 
-Finally, we performed statistical analyses of differences in buying behaviours between the two user types.
+Finally, we performed statistical analyses of differences in buying behaviours between the two user types. We used $t$-tests to assess differences in mean values, $F$-statistics to assess differences in variances, and Mann-Whitney tests for two-sample Wilcoxon tests.
 
 \pagebreak
 
@@ -203,6 +203,8 @@ cooccurence_heavy %>%
 cooccurence_light %>% 
   kable(caption = "Brand co-occurence matrix for light users")
 ```
+
+\pagebreak
 
 ## Appendix two - $k$-means and random forest confusion matrices
 

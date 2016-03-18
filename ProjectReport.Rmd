@@ -44,7 +44,7 @@ This report presents our response to this question. Whilst the data are confiden
 
 We have found that differences exist between heavy and light users in the category. We measured price elasticity using regression methods and found heavy users to be typically more sensitive to price than light users. We used machine learning approaches to understand differences in buying behaviours between the two groups and were able to successfully show that there are differences in a number of behaviours. 
 
-\pagebreak
+***
 
 # Section One: Approach
 
@@ -188,7 +188,7 @@ bb_avg_weekly_packs
 
 We also computed the statistical significance of differences between heavy and light users for a number of buying behaviours. The results each time indicated that the differences were statistically significant (appendix four). 
 
-\pagebreak
+***
 
 # Appendices
 

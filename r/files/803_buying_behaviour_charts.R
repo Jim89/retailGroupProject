@@ -20,6 +20,8 @@ dist_split <- function(data, field, bins = 30, type = "histogram") {
   }
 }
 
+
+
 # Step 1 - create the plots ----------------------------------------------------
 # Split plot by prop promo price
 bb_prop_promo_price <- dist_split(buying_behaviour, "prop_promo_price", type = "violin") +
@@ -71,3 +73,14 @@ bb_shops <- dist_split(buying_behaviour, "shops", 1) +
             scale_x_continuous(breaks = seq(1, 6, 1)) +
             theme +
             theme(strip.text = element_blank())  
+
+# Split plot by brand loyalty
+bb_brand_loyal <- dist_split(buying.behaviour, "Herfindahl_brand", bins = .1) +
+                  xlab("Brand loyalty") +
+                  theme +
+                  theme(strip.text = element_blank())
+  
+bb_store_loyal <- dist_split(buying.behaviour, "Herfindahl_store", bins = .1) +
+                  xlab("Store loyalty") +
+                  theme +
+                  theme(strip.text = element_blank())

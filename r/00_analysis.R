@@ -5,6 +5,7 @@ library(broom)
 library(readr)
 library(randomForest)
 library(ggplot2)
+library(DescTools)
 
 # Clean up
 rm(list = ls())
@@ -30,6 +31,7 @@ source("./r/files/104_write_elasticity_results_to_file.R")
 # Buying behaviour modelling
 source("./r/files/201_buying_behaviour_data.R")
 source("./r/files/202_buying_behaviour_classify.R")
+source("./r/files/203_buying_behaviour_stats.R")
 
 # Co-occurence and switching matrices
 source("./r/files/401_cooccurence_matrices.R")

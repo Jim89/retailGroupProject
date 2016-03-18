@@ -7,9 +7,11 @@ rownames(rforest$importance) <- rownames(rforest$importance) %>%
                             gsub("avg", "Average", .) %>% 
                             gsub("prop", "proportion", .) %>% 
                             gsub("promo", "promotion", .) %>% 
+                            gsub("Average weekly packs", "Average packs per visit", .) %>% 
+                            gsub("Average weekly spend", "Average spend per visit", .) %>% 
                             toproper()
 colnames(rforest$importance)[3] <- "Importance"
-varImpPlot(rforest, type = 1, main = "Variables important for classifying\n light vs heavy users", 
+varImpPlot(rforest, type = 1, main = "", 
            cex = 1, color = "black")
 }
 

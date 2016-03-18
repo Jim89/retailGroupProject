@@ -3,9 +3,9 @@
 
 # Step 1 - prepare data --------------------------------------------------------
 # Create function to find unique brands for each transaction
-find_brands <- function(cust_type){
+find_brands <- function(cust){
   coffee_clean %>% 
-    filter(cust_type == cust_type) %>% 
+    filter(cust_type == cust) %>% 
     select(transaction_id, brand_clean) %>% 
     distinct()
 }

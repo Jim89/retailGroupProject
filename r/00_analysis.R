@@ -6,6 +6,9 @@ library(readr)
 library(randomForest)
 library(ggplot2)
 
+# Clean up
+rm(list = ls())
+
 # Step 1 - source user-defined functions----------------------------------------
 source("./r/functions/normalise.R")
 source("./r/functions/toproper.R")

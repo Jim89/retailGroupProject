@@ -23,7 +23,9 @@ avg_weekly_visits <- coffee_clean %>%
                       group_by(relweek, house) %>% 
                       summarise(visits = n()) %>% 
                       group_by(house) %>% 
-                      summarise(avg_weekly_visits = mean(visits))
+                      summarise(total_visits = sum(visits)) %>% 
+                      mutate(avg_weekly_visits = total_visits / 52) %>% 
+                      select(-total_visits)
 
 distinct_shops <- coffee_clean %>% 
   group_by(house, shop_desc_clean) %>% 

@@ -103,17 +103,17 @@ We transformed the values into elasticity matrices for light and heavy users. We
 
 ## Buying behaviours
 
-In order to assess differences between light and heavy users we defined a range of buying behaviours. For each house we calculated:
+In order to assess differences between light and heavy users we defined a range of buying behaviours. For each house we calculated the:
 
-* the average spend (£) per visit;
-* the average packs purchased per visit;
-* the average weekly visits;
-* the distinct number of individual retailers visited;
-* the distinct number of brands purchased;
-* the maximum amount spent on any single trip;
-* the minimum amount spent on any single trip;
-* the proportion of all purchases on price promotion; and
-* the proportion of all purchases on unit-based promotion.
+* average spend (£) per visit;
+* average packs purchased per visit;
+* average weekly visits;
+* shop loyalty;
+* brand loyalty;
+* maximum amount spent on any single trip;
+* minimum amount spent on any single trip;
+* proportion of all purchases on price promotion; and
+* proportion of all purchases on unit-based promotion.
 
 These measures were combined in to a single data set keyed by house.
 
@@ -170,7 +170,7 @@ The results from both our $k$-means and random forest implementations showed tha
 
 The variable importance plot from the random forest algorithm is seen in figure two. It shows that features such as the average number of packs purchased per visit and the proportion of all purchases made on price promotion are the most important when determining light and heavy users, meaning that they have the greatest differences between the two groups.
 
-```{r var_imp, echo = FALSE, fig.cap="Variable importance for classifying users in to light versus heavy via random forest algorithm.", fig.height=3.5, fig.width=6}
+```{r var_imp, echo = FALSE, fig.cap="Variable importance (measure by mean decrease in accuracy) for classifying users in to light versus heavy via random forest algorithm.", fig.height=3.5, fig.width=6}
 source("./r/files/802_variable_importance_plot.R")
 var_imp(rf)
 ```
@@ -186,7 +186,7 @@ bb_prop_promo_price
 bb_avg_weekly_packs
 ```
 
-We also note that the differences in buying behaviours between heavy and light users were typically statistically significant (appendix four).  
+We also computed the statistical significances of differences between heavy and light users for a number of buying behaviours. The results each time indiciated that the differences were statistically significant (appendix four). 
 
 \pagebreak
 
@@ -204,8 +204,6 @@ cooccurence_light %>%
   kable(caption = "Brand co-occurence matrix for light users")
 ```
 
-\pagebreak
-
 ## Appendix two - $k$-means and random forest confusion matrices
 
 ```{r k_conf_mat, echo = FALSE}
@@ -221,8 +219,6 @@ mat %>%
   kable(caption = "Confusion matrix for random forest classification against existing user labels")
 ```
 
-\pagebreak
-
 ## Appendix three - Brand proportion of purhcases differences
 
 ```{r prob_brands, echo = FALSE, fig.cap = "", fig.height = 3.5, fig.width=6, warning=FALSE}
@@ -230,8 +226,25 @@ source("./r/files/804_brands_purchased_plot.R")
 brands_purchase_plot
 ```
 
-\pagebreak
-
 ## Appendix four - Brand behaviour statistical differences
 
-TODO
+```{r ttests, echo = FALSE}
+t_tests %>%
+  select(variables, mean_heavy, mean_light, difference, statistic, p.value) %>% 
+  kable(caption = "Mean value differences for of a range of buying behaviours between heavy and light users",
+        col.names = c("Behaviour", "Heavy Users", "Light Users", "Difference","t-value", "p-value"))
+```
+
+```{r var_tests, echo = FALSE}
+var_tests %>%
+  select(variables, var_heavy, var_light, f.statistic, p.value) %>% 
+  kable(caption = "Variance differences for of a range of buying behaviours between heavy and light users",
+        col.names = c("Behaviour", "Heavy Users", "Light Users", "F-Statistic", "p-value"))
+```
+
+```{r man_whit_tests, echo = FALSE}
+wilcox_tests %>%
+  select(variables, mann.whitney.u.statistic, p.value) %>% 
+  kable(caption = "Mann Whitney U-statistics for of a range of buying behaviours between heavy and light users",
+        col.names = c("Behaviour", "U-Statistic", "p-value"))
+```

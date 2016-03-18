@@ -42,7 +42,7 @@ This report presents our response to this question. Whilst the data are confiden
 
 ## Executive summary
 
-We have found that differences exist between heavy and light users in the category. We measured price elasticity using regression methods and found heavy users to be typically more sensitive to price than light users. We used machine learning approaches to understand differences in buying behaviours between the two groups and were able to successfuly show that there are differences in a number of behaviours. 
+We have found that differences exist between heavy and light users in the category. We measured price elasticity using regression methods and found heavy users to be typically more sensitive to price than light users. We used machine learning approaches to understand differences in buying behaviours between the two groups and were able to successfully show that there are differences in a number of behaviours. 
 
 \pagebreak
 
@@ -97,7 +97,7 @@ We developed models for each functional form (level-level, semi-log and log-log)
 
 ## Price elasticity model implementation
 
-For each of customer type, we implemented stepwise regression to find the best model for each brand. We obtained the relevant coefficients from each brand's model and performed the appropriate transformations to generate elasticity values. 
+For each of customer type, we implemented step-wise regression to find the best model for each brand. We obtained the relevant coefficients from each brand's model and performed the appropriate transformations to generate elasticity values. 
 
 We transformed the values into elasticity matrices for light and heavy users. We also obtained the $p$-value for each coefficient, setting to zero any elasticities that were not statistically significant ($p \geq 0.05$).
 
@@ -145,11 +145,11 @@ light_elasticities_clean %>%
   kable(caption = "Price elasticity matrix for light users")
 ```
 
-Heavy users have an average own-price elasticity of `r round(heavy_elasticities_clean %>% diag() %>% mean(), 3)` compared with `r round(light_elasticities_clean %>% diag() %>% mean(), 3)` for light users (tables one and two). Moreover there are more 0 (i.e. insignificant) elasticities for light users (`r sum(light_elasticities_clean ==0)`) than for heavy (`r sum(heavy_elasticities_clean == 0)`). This shows that heavy users are more price sensitve than light users. 
+Heavy users have an average own-price elasticity of `r round(heavy_elasticities_clean %>% diag() %>% mean(), 3)` compared with `r round(light_elasticities_clean %>% diag() %>% mean(), 3)` for light users (tables one and two). Moreover there are more 0 (i.e. insignificant) elasticities for light users (`r sum(light_elasticities_clean ==0)`) than for heavy (`r sum(heavy_elasticities_clean == 0)`). This shows that heavy users are more price sensitive than light users. 
 
 Whilst the differences in own-price elasticity are not statistically significant ($p$-value `r round(t.test(heavy_elasticities_clean %>% diag(), light_elasticities_clean %>% diag())$p.value, 3)`), from a practical perspective the results may still be of interest to a manager in the retail setting. 
 
-We note the presence of some negative cross-price elasticities. These are unusual so we examined the co-occurence matrices (appendix one) for products with negative cross-price elasticities in order investigate if they were potentially complementary products. It appears that they are not, and such values are therefore likely to have been produced as a result of aggregating the data to a weekly level. When calculating clout and vulnerability, we have ignored these erroneous values.
+We note the presence of some negative cross-price elasticities. These are unusual so we examined the co-occurrence matrices (appendix one) for products with negative cross-price elasticities in order investigate if they were potentially complementary products. It appears that they are not, and such values are therefore likely to have been produced as a result of aggregating the data to a weekly level. When calculating clout and vulnerability, we have ignored these erroneous values.
 
 ## Clout and vulnerability statistics
 
@@ -166,7 +166,7 @@ Thirdly, Nescafe has a reasonably high clout _and_ vulnerability for heavy users
 
 ## Buying behaviour differences
 
-The results from both our $k$-means and random forest implementations showed that buying behaviour can be used to distinguish between heavy and light users. This means that there _are_ differences betweent the two groups. Appendix two shows the confusion matrices found via each of these algorithms. $k$-means was able to distinguish between heavy and light users with `r round(sum(diag(conf_mat))/sum(conf_mat)*100, 1)`% accuracy compared to the labels we defined. Random forest had an accuracy of `r round((1-mean(rf$err.rate[,1]))*100, 1)`% compared to the true labels.
+The results from both our $k$-means and random forest implementations showed that buying behaviour can be used to distinguish between heavy and light users. This means that there _are_ differences between the two groups. Appendix two shows the confusion matrices found via each of these algorithms. $k$-means was able to distinguish between heavy and light users with `r round(sum(diag(conf_mat))/sum(conf_mat)*100, 1)`% accuracy compared to the labels we defined. Random forest had an accuracy of `r round((1-mean(rf$err.rate[,1]))*100, 1)`% compared to the true labels.
 
 The variable importance plot from the random forest algorithm is seen in figure two. It shows that features such as the average number of packs purchased per visit and the proportion of all purchases made on price promotion are the most important when determining light and heavy users, meaning that they have the greatest differences between the two groups.
 
@@ -186,7 +186,7 @@ bb_prop_promo_price
 bb_avg_weekly_packs
 ```
 
-We also computed the statistical significances of differences between heavy and light users for a number of buying behaviours. The results each time indiciated that the differences were statistically significant (appendix four). 
+We also computed the statistical significance of differences between heavy and light users for a number of buying behaviours. The results each time indicated that the differences were statistically significant (appendix four). 
 
 \pagebreak
 

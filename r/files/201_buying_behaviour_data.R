@@ -17,6 +17,7 @@ house_summary <- coffee_clean %>%
             avg_weekly_spend = mean(total_spend),
             avg_weekly_vol = mean(total_vol)) 
 
+# Average weekly visits
 avg_weekly_visits <- coffee_clean %>% 
                       select(relweek, house, transaction_id) %>% 
                       distinct() %>% 
@@ -27,17 +28,21 @@ avg_weekly_visits <- coffee_clean %>%
                       mutate(avg_weekly_visits = total_visits / 52) %>% 
                       select(-total_visits)
 
-distinct_shops <- coffee_clean %>% 
-  group_by(house, shop_desc_clean) %>% 
-  tally() %>% 
-  group_by(house) %>% 
-  summarise(shops = n())
+# Shop loyalty
+store_breakdown  <- coffee_clean %>% 
+                    group_by(house, shop_desc_clean) %>% 
+                    summarise(store_count = n()) %>% 
+                    group_by(house) %>% 
+                    summarise(store_loyalty = Herfindahl(store_count))
 
-distinct_brands <- coffee_clean %>% 
-  group_by(house, brand_clean) %>% 
-  tally() %>% 
-  group_by(house) %>% 
-  summarise(brands = n())
+
+# Brand loyalty
+brand_breakdown  <- coffee_clean %>% 
+                    group_by(house, brand_clean) %>% 
+                    summarise(brand_count = n()) %>% 
+                    group_by(house) %>% 
+                    summarise(brand_loyalty = Herfindahl(brand_count))
+
 
 spend_stats <- coffee_clean %>% 
   group_by(house) %>% 
@@ -59,8 +64,8 @@ quartiles <- quantile(house_summary$avg_weekly_vol)
 
 # Create data set
 buying_behaviour <- house_summary %>% 
-          left_join(distinct_shops) %>% 
-          left_join(distinct_brands) %>% 
+          left_join(store_breakdown) %>% 
+          left_join(brand_breakdown) %>% 
           left_join(spend_stats) %>% 
           left_join(promo_stats) %>% 
           left_join(avg_weekly_visits) %>% 

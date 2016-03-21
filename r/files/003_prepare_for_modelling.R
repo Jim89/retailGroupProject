@@ -49,8 +49,22 @@ filter_and_widen <- function(data, cust_status = 0) {
 heavy <- filter_and_widen(coffee_clean, "heavy")
 light <- filter_and_widen(coffee_clean, "light")
 
+# Convert missing values to 0
+# heavy[is.na(heavy)] <- 0
+# light[is.na(light)] <- 0
+
+# heavy <- heavy[complete.cases(heavy), ]
+
+for(i in 1:ncol(heavy)){
+  val <- mean(heavy[,i] %>% sapply(as.numeric), na.rm = TRUE)
+  heavy[is.na(heavy[,i]), i] <- val
+  # print(val)
+}
 
 
-
-
+for(i in 1:ncol(light)){
+  val <- mean(light[,i] %>% sapply(as.numeric), na.rm = TRUE)
+  light[is.na(light[,i]), i] <- val
+  # print(val)
+}
 

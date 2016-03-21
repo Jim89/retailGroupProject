@@ -4,10 +4,11 @@
 # Step 1 - aggregate data ------------------------------------------------------
 house_summary <- coffee_clean %>% 
                 group_by(relweek, house) %>% 
-                summarise(total_vol = sum(volume)) %>% 
+                summarise(visits = n(),
+                  total_vol = sum(volume)) %>% 
                 ungroup() %>% 
                 group_by(house) %>% 
-                summarise(avg_weekly_vol = mean(total_vol)) 
+                summarise(avg_weekly_vol = mean(total_vol))
 
 # Step 2 - classify into light vs heavy ----------------------------------------
 quartiles <- quantile(house_summary$avg_weekly_vol)

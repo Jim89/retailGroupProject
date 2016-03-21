@@ -68,47 +68,47 @@ variances <- data_frame(var_light = c(get_var("avg_weekly_spend", "Light"),
 
 # Step 1 - Compute statistics for each field -----------------------------------
 # Avg weekly spend
-var_test_spend <- var_test("avg_weekly_spend")
+var_test_spend <- var_test("avg_weekly_spend")[1,]
 tTest_spend <- t_test("avg_weekly_spend")
 wilcox_spend <- wicox("avg_weekly_spend")
 
 # Avg. weekly packs
-var_test_packs <- var_test("avg_weekly_packs")
+var_test_packs <- var_test("avg_weekly_packs")[1,]
 tTest_packs <- t_test("avg_weekly_packs")
 wilcox_packs <- wicox("avg_weekly_packs")
 
 # Avg. weekly visits
-var_test_visits <- var_test("avg_weekly_visits")
+var_test_visits <- var_test("avg_weekly_visits")[1,]
 tTest_visits <- t_test("avg_weekly_visits")
 wilcox_visits <- wicox("avg_weekly_visits")
 
 # Store loyalty
-var_test_store_loy <- var_test("store_loyalty")
+var_test_store_loy <- var_test("store_loyalty")[1,]
 tTest_store_loy <- t_test("store_loyalty")
 wilcox_store_loy <- wicox("store_loyalty")
 
 # Brand loyalty
-var_test_brand_loy <- var_test("brand_loyalty")
+var_test_brand_loy <- var_test("brand_loyalty")[1,]
 tTest_brand_loy <- t_test("brand_loyalty")
 wilcox_brand_loy <- wicox("brand_loyalty")
 
 # Max spend
-var_test_max <- var_test("max_spend")
+var_test_max <- var_test("max_spend")[1,]
 tTest_max <- t_test("max_spend")
 wilcox_max <- wicox("max_spend")
 
 # min spend
-var_test_min <- var_test("min_spend")
+var_test_min <- var_test("min_spend")[1,]
 tTest_min <- t_test("min_spend")
 wilcox_min <- wicox("min_spend")
 
 # Promo price
-var_test_promo_price <- var_test("prop_promo_price")
+var_test_promo_price <- var_test("prop_promo_price")[1,]
 tTest_promo_price <- t_test("prop_promo_price")
 wilcox_promo_price <- wicox("prop_promo_price")
 
 # Promo units
-var_test_promo_units <- var_test("prop_promo_units")
+var_test_promo_units <- var_test("prop_promo_units")[1,]
 tTest_promo_units <- t_test("prop_promo_units")
 wilcox_promo_units <- wicox("prop_promo_units")
 

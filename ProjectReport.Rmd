@@ -54,7 +54,7 @@ In line with the assignment instructions we filtered the data to include only da
 
 Using information on promotions we defined a field indicating if the sale was a price-promoted sale (TPR). We derived a second, similar field which indicated if the sale was a unit-promoted sale (e.g. X product for £Y). We calculated the price of each product using the approach outlined in the data-dictionary ($price = netspend/packs$).
 
-We grouped and cleaned the brand names. Any brands with fewer than five thousand sales was labelled as "_Other brand_". All supermarket own-brands were labelled as "_supermarket own_", and all _Nescafe_ products were grouped together. This left us with six distinct brands:
+We grouped and cleaned the brand names. Any brands with fewer than five thousand sales were labelled as "_Other brand_". All supermarket own-brands were labelled as "_supermarket own_", and all _Nescafe_ products were grouped together. This left us with six distinct brands:
 
 * Carte Noire;
 * Kenco;
@@ -67,7 +67,7 @@ Finally, we created a "visit ID" for each unique combination of week, day, house
 
 ## Defining heavy and light
 
-In order to separate "heavy" from "light" users in the category we calculated for each household the average volume of coffee purchased on each shopping visit. Houses below the twenty-fifth percentile were classified as "light" users. Houses above the seventy-fifth percentile were classified as "heavy" users. Houses that fell between the twenty-fifth and seventy-fifth percentile were classified as "medium" users and were excluded from the analysis.
+In order to separate "heavy" from "light" users in the category we calculated for each household the average _weight volume_ of coffee purchased on each shopping visit. Houses below the twenty-fifth percentile were classified as "light" users. Houses above the seventy-fifth percentile were classified as "heavy" users. Houses that fell between the twenty-fifth and seventy-fifth percentile were classified as "medium" users and were excluded from the analysis.
 
 ## Data validation and preparation
 
@@ -149,7 +149,7 @@ Heavy users have an average own-price elasticity of `r round(heavy_elasticities_
 
 Whilst the differences in own-price elasticity are not statistically significant ($p$-value `r round(t.test(heavy_elasticities_clean %>% diag(), light_elasticities_clean %>% diag())$p.value, 3)`), from a practical perspective the results may still be of interest to a manager in the retail setting. 
 
-We note the presence of some negative cross-price elasticities. These are unusual so we examined the co-occurrence matrices (appendix one) for products with negative cross-price elasticities in order investigate if they were potentially complementary products. It appears that they are not, and such values are therefore likely to have been produced as a result of aggregating the data to a weekly level. When calculating clout and vulnerability, we have ignored these erroneous values.
+We note the presence of some negative cross-price elasticities. These are unusual so we examined the co-occurrence matrices (appendix one) for products with negative cross-price elasticities in order to investigate if they were potentially complementary products. It appears that they are not, and such values are therefore likely to have been produced as a result of aggregating the data to a weekly level. When calculating clout and vulnerability, we have ignored these erroneous values.
 
 ## Clout and vulnerability statistics
 
@@ -162,7 +162,7 @@ There are a few key differences in the clout and vulnerability between the two g
 
 Secondly, Kenco coffee has a high vulnerability for heavy users relative to light users. This drop in vulnerability is interesting, indicating for that heavy users, Kenco is at a greater risk of losing market share to its competitors than for light users. 
 
-Thirdly, Nescafe has a reasonably high clout _and_ vulnerability for heavy users, and very small values for light users.  Nescafe is the most popular brand for heavy users (see appendix 3) and so it makes sense that it has both a high clout and vulnerability given heavy users price sensitivity. However light users appear to prefer supermarket own-brand goods (appendix 3) and are less price sensitive; so Nescafe is neither greatly effected by, or has much effect on, other brands. 
+Thirdly, Nescafe has a reasonably high clout _and_ vulnerability for heavy users, and very small values for light users.  Nescafe is the most popular brand for heavy users (see appendix 3) and so it makes sense that it has both a high clout and vulnerability given heavy users price sensitivity. However light users appear to prefer supermarket own-brand goods (appendix 3) and are less price sensitive; so Nescafe is neither greatly affected by, or has much effect on, other brands. 
 
 ## Buying behaviour differences
 
@@ -170,7 +170,7 @@ The results from both our $k$-means and random forest implementations showed tha
 
 The variable importance plot from the random forest algorithm is seen in figure two. It shows that features such as the average number of packs purchased per visit and the proportion of all purchases made on price promotion are the most important when determining light and heavy users, meaning that they have the greatest differences between the two groups.
 
-```{r var_imp, echo = FALSE, fig.cap="Variable importance (measure by mean decrease in accuracy) for classifying users in to light versus heavy via random forest algorithm.", fig.height=3.5, fig.width=6}
+```{r var_imp, echo = FALSE, fig.cap="Variable importance (measured by mean decrease in accuracy) for classifying users in to light versus heavy via random forest algorithm.", fig.height=3.5, fig.width=6}
 source("./r/files/802_variable_importance_plot.R")
 var_imp(rf)
 ```
@@ -221,7 +221,7 @@ mat %>%
   kable(caption = "Confusion matrix for random forest classification against existing user labels")
 ```
 
-## Appendix three - Brand proportion of purhcases differences
+## Appendix three - Brand proportion of purchases differences
 
 ```{r prob_brands, echo = FALSE, fig.cap = "", fig.height = 3.5, fig.width=6, warning=FALSE}
 source("./r/files/804_brands_purchased_plot.R")
@@ -230,11 +230,11 @@ brands_purchase_plot
 
 ## Appendix four - Brand behaviour statistical differences
 
-```{r ttests, echo = FALSE}
-t_tests %>%
-  select(variables, mean_heavy, mean_light, difference, statistic, p.value) %>% 
-  kable(caption = "Mean value differences for of a range of buying behaviours between heavy and light users",
-        col.names = c("Behaviour", "Heavy Users", "Light Users", "Difference","t-value", "p-value"))
+```{r man_whit_tests, echo = FALSE}
+wilcox_tests %>%
+  select(variables, mann.whitney.u.statistic, p.value) %>% 
+  kable(caption = "Mann Whitney U-statistics for of a range of buying behaviours between heavy and light users",
+        col.names = c("Behaviour", "U-Statistic", "p-value"))
 ```
 
 ```{r var_tests, echo = FALSE}
@@ -244,9 +244,9 @@ var_tests %>%
         col.names = c("Behaviour", "Heavy Users", "Light Users", "F-Statistic", "p-value"))
 ```
 
-```{r man_whit_tests, echo = FALSE}
-wilcox_tests %>%
-  select(variables, mann.whitney.u.statistic, p.value) %>% 
-  kable(caption = "Mann Whitney U-statistics for of a range of buying behaviours between heavy and light users",
-        col.names = c("Behaviour", "U-Statistic", "p-value"))
+```{r ttests, echo = FALSE}
+t_tests %>%
+  select(variables, mean_heavy, mean_light, difference, statistic, p.value) %>% 
+  kable(caption = "Mean value differences for of a range of buying behaviours between heavy and light users. We conducted these tests after viewing the results of the F-tests for equality of variances.",
+        col.names = c("Behaviour", "Heavy Users", "Light Users", "Difference","t-value", "p-value"))
 ```

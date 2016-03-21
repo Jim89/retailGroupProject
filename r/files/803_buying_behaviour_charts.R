@@ -66,7 +66,7 @@ bb_brand_loyal <- dist_split(buying_behaviour, "brand_loyalty", bins = .1) +
                   theme +
                   theme(strip.text = element_blank())
   
-bb_store_loyal <- dist_split(buying_behaviour, "shop_loyalty", bins = .1) +
+bb_store_loyal <- dist_split(buying_behaviour, "store_loyalty", bins = .1) +
                   xlab("Store loyalty") +
                   theme +
                   theme(strip.text = element_blank())

@@ -28,7 +28,7 @@ if (!dir.exists("./visualisations")) {
   dir.create("./visualisations")
 }
 # Save clout and vulnerability map
-ggsave("./visualisations/clout_and_vuln_map.svg", clout_and_vuln_map)
+ggsave("./visualisations/clout_and_vuln_map.svg", clout_and_vuln_map, height = 7, width = 8)
 
 # Save variable importance plot
 svg(filename = "./visualisations/var_imp_plot.svg")
@@ -39,9 +39,9 @@ dev.off()
 bbplots <- ls()[grep("bb_", ls())] 
 
 # Loop over buy-behav plots and write to SVG files
-res <- lapply(bbplots, function(x) ggsave(paste0("./visualisations/", x,".svg"),
-                                          eval(parse(text = x))))
+res <- lapply(bbplots, function(x) ggsave(filename = paste0("./visualisations/", x,".svg"),
+                                          plot = eval(parse(text = x)), height = 6, width = 11))
 rm(res)
 
 # Save prop brands purchased plot
-ggsave("./visualisations/brands_purchased.svg", brands_purchase_plot)
+ggsave("./visualisations/brands_purchased.svg", brands_purchase_plot, height = 7, width = 9)

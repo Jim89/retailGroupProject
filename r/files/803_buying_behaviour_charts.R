@@ -54,7 +54,7 @@ bb_avg_weekly_spend <- dist_split(buying_behaviour, "avg_weekly_spend", 2) +
 
 
 # Split plot by avg_weekly_visits
-bb_avg_weekly_visits <- dist_split(buying_behaviour, "avg_weekly_visits", 1) + 
+bb_avg_weekly_visits <- dist_split(buying_behaviour, "avg_weekly_visits", 0.1) + 
                         xlab("Average weekly visits") +
                         theme +
                         theme(strip.text = element_blank())

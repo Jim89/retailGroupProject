@@ -38,7 +38,7 @@ We were provided with data from _Katar Worldpanel_ covering sales of coffee over
 
 > "Do heavy versus light users in the category have differences in price elasticities and differences in buying behaviour (e.g. buy different brands, buy different proportion of products on discount)?
 
-This report presents our response to this question. Whilst the data are confidential, our approach including both intermediate and final analytical code/results is packaged with this report, and can also be found on our online repository [here](https://github.com/Jim89/retailGroupProject).
+This report presents our response to this question. Whilst the data are confidential, our approach including both intermediate and final analytical code/results is packaged with this report, and can also be found on our online repository here: [https://github.com/Jim89/retailGroupProject](https://github.com/Jim89/retailGroupProject).
 
 ## Executive summary
 
@@ -67,7 +67,9 @@ Finally, we created a "visit ID" for each unique combination of week, day, house
 
 ## Defining heavy and light
 
-In order to separate "heavy" from "light" users in the category we calculated for each household the average _weight volume_ of coffee purchased on each shopping visit. Houses below the twenty-fifth percentile were classified as "light" users. Houses above the seventy-fifth percentile were classified as "heavy" users. Houses that fell between the twenty-fifth and seventy-fifth percentile were classified as "medium" users and were excluded from the analysis.
+In order to separate "heavy" from "light" users in the category we calculated for each household the average _weight volume_ of coffee purchased on each shopping visit. Houses below the twenty-fifth percentile were classified as "light" users. Houses above the seventy-fifth percentile were classified as "heavy" users. Houses that fell between the twenty-fifth and seventy-fifth percentile were classified as "medium" users and were excluded from the analysis. 
+
+We note that this method does not account for consumers with combinations of extreme values in the data (for example a customer who appears in the data only once and purchased a very large volume of coffee, compared with a customer who bought a smaller volume every single day). Our exploratory data analyses suggested that such extreme values were virtually non-existent in the data, however. Further, as the data were collected via consumers scanning their receipts, we have made an assumption that each visit for a consumer present in the data is typical of their usual buying behaviour (imagining that not every consumer will scan every receipt for every visit). As such, we believe that our approach for classifying customers in this way is appropriate.
 
 ## Data validation and preparation
 
@@ -153,12 +155,12 @@ We note the presence of some negative cross-price elasticities. These are unusua
 
 ## Clout and vulnerability statistics
 
-```{r clout_map, echo = FALSE, fig.cap="Clout and vulnerabilty maps for heavy and light users. Note that negative cross-price elasticities were not included in these calculations as they are believed to erroneous values introduced due via aggregation.", fig.height=4, fig.width=6}
+```{r clout_map, echo = FALSE, fig.cap="Clout and vulnerabilty maps for heavy and light users. Note that negative cross-price elasticities were not included in these calculations as they are believed to erroneous values introduced via aggregation.", fig.height=4, fig.width=6}
 source("./r/files/801_clout_and_vuln_map.R")
 clout_and_vuln_map
 ```
 
-There are a few key differences in the clout and vulnerability between the two groups. Firstly supermarket-branded coffees have a large clout for heavy users compared to light. We concluded that as it gets more expensive, heavy purchasers of supermarket coffee are more likely to switch to premium brands at comparable price points.
+There are a few key differences in the clout and vulnerability between the two groups. Firstly supermarket-branded coffees have a large clout for heavy users compared to light. We concluded that as it gets more expensive, heavy purchasers of supermarket coffee are more likely to switch to premium brands at comparable price points. The table of full numerical statistics can be seen in appendix five.
 
 Secondly, Kenco coffee has a high vulnerability for heavy users relative to light users. This drop in vulnerability is interesting, indicating for that heavy users, Kenco is at a greater risk of losing market share to its competitors than for light users. 
 
@@ -175,7 +177,7 @@ source("./r/files/802_variable_importance_plot.R")
 var_imp(rf)
 ```
 
-Such differences can be readily observed in figures three and four. Figure three shows that heavy users bought a higher proportion of products on price promotion relative to light users, where the majority of users made no price-promotional purchases. Figure four shows that light users typically only purchase an average of one pack per visit, whereas heavy users buy a greater number of packs at once. 
+Such differences can be readily observed in figures three and four. Figure three shows that heavy users bought a higher proportion of products on price promotion relative to light users, where the majority of users made no price-promotional purchases. Figure four shows that light users typically only purchase an average of one pack per visit, whereas heavy users buy a greater number of packs at once. Further plots can be seen in the packaged code base or in the online repository  here: [https://github.com/Jim89/retailGroupProject](https://github.com/Jim89/retailGroupProject).
 
 ```{r bb_promo_price, echo = FALSE, fig.cap = "Differences in proportion of price-promoted sales for light and heavy users", fig.height = 3.5, fig.width=6, warning=FALSE}
 source("./r/files/803_buying_behaviour_charts.R")
@@ -233,20 +235,32 @@ brands_purchase_plot
 ```{r man_whit_tests, echo = FALSE}
 wilcox_tests %>%
   select(variables, mann.whitney.u.statistic, p.value) %>% 
-  kable(caption = "Mann Whitney U-statistics for of a range of buying behaviours between heavy and light users",
+  mutate(p.value = signif(p.value, 3)) %>% 
+  kable(caption = "Mann Whitney U-statistics for of a range of buying behaviours between heavy and light users. Note the p-values of 0 are simply rounded values, indicating that p was well below 0.01.",
         col.names = c("Behaviour", "U-Statistic", "p-value"))
 ```
 
 ```{r var_tests, echo = FALSE}
 var_tests %>%
   select(variables, var_heavy, var_light, f.statistic, p.value) %>% 
-  kable(caption = "Variance differences for of a range of buying behaviours between heavy and light users",
+  mutate(p.value = signif(p.value, 3)) %>% 
+  kable(caption = "Variance differences for of a range of buying behaviours between heavy and light users. Note the p-values of 0 are simply rounded values, indicating that p was well below 0.01.",
         col.names = c("Behaviour", "Heavy Users", "Light Users", "F-Statistic", "p-value"))
 ```
 
 ```{r ttests, echo = FALSE}
 t_tests %>%
   select(variables, mean_heavy, mean_light, difference, statistic, p.value) %>% 
-  kable(caption = "Mean value differences for of a range of buying behaviours between heavy and light users. We conducted these tests after viewing the results of the F-tests for equality of variances.",
+  mutate(p.value = signif(p.value, 3)) %>% 
+  kable(caption = "Mean value differences for of a range of buying behaviours between heavy and light users. We conducted these tests after viewing the results of the F-tests for equality of variances. Note the p-values of 0 are simply rounded values, indicating that p was well below 0.01.",
         col.names = c("Behaviour", "Heavy Users", "Light Users", "Difference","t-value", "p-value"))
+```
+
+## Appendix five - clout and vulnerability values
+```{r clout, echo = FALSE}
+clout_and_vuln_stats %>% 
+  mutate(cust = toproper(cust),
+         brand = toproper(brand)) %>% 
+  kable(caption = "Clout and vulnerabilty values per brand for heavy and light users. Note that negative cross-price elasticities were not included in these calculations as they are believed to erroneous values introduced via aggregation.",
+        col.names = c("Consumer", "Brand", "Clout", "Vulnerability"))
 ```

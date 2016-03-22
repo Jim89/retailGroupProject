@@ -4,3 +4,6 @@ data/DataDecoder.xlsx
 .Rproj.user
 *.twb
 .DS_Store
+packaged/
+ProjectReport.pdf
+packaged.zip

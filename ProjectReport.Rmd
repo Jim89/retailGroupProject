@@ -147,7 +147,7 @@ light_elasticities_clean %>%
   kable(caption = "Price elasticity matrix for light users")
 ```
 
-Heavy users have an average own-price elasticity of `r round(heavy_elasticities_clean %>% diag() %>% mean(), 3)` compared with `r round(light_elasticities_clean %>% diag() %>% mean(), 3)` for light users (tables one and two). Moreover there are more 0 (i.e. insignificant) elasticities for light users (`r sum(light_elasticities_clean ==0)`) than for heavy (`r sum(heavy_elasticities_clean == 0)`). This shows that heavy users are more price sensitive than light users. 
+Heavy users have an average own-price elasticity of `r round(heavy_elasticities_clean %>% diag() %>% mean(), 3)` compared with `r round(light_elasticities_clean %>% diag() %>% mean(), 3)` for light users (tables one and two). Moreover there are more 0 (i.e. insignificant) elasticities for light users (`r sum(light_elasticities_clean ==0)`) than for heavy (`r sum(heavy_elasticities_clean == 0)`). This shows that heavy users are more price sensitive than light users (tables one and two). 
 
 Whilst the differences in own-price elasticity are not statistically significant ($p$-value `r round(t.test(heavy_elasticities_clean %>% diag(), light_elasticities_clean %>% diag())$p.value, 3)`), from a practical perspective the results may still be of interest to a manager in the retail setting. 
 
